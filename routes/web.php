@@ -13,6 +13,25 @@
 |
 */
 
+use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Ui\UiController;
+use App\Http\Controllers\Ui\UiGalaxyController;
+
 $router->get('/', function () use ($router) {
     return $router->app->version();
+});
+
+$router->group(['prefix' => 'ui', 'namespace' => '\\'], function () use ($router) {
+    $router->get('/', ['as' => 'main', function () {
+        return view('index');
+    }]);
+    $router->get('galaxy', ['as' => 'galaxy', 'uses' => UiGalaxyController::class . '@index']);
+    $router->get('changelog', ['as' => 'changelog', function () {
+        return view('index');
+    }]);
+});
+
+
+$router->group(['prefix' => '/api', 'namespace' => '\\'], function () use ($router) {
+    $router->post('updateSystem', ApiController::class . '@updateSystem');
 });
