@@ -1,0 +1,22 @@
+<?php
+
+
+namespace App\Http\Controllers\Ui;
+
+
+use App\Models\Player;
+use Illuminate\Http\Request;
+
+class UiSearchController extends UiMainController
+{
+    public function players(Request $request)
+    {
+        $players = Player::searchByRequest($request);
+        if ($players) {
+            $players->load('alliance');
+        }
+        return view('index', [
+            'players' => $players
+        ]);
+    }
+}

@@ -74,7 +74,7 @@ class ApiUtils
         $playerParams = [];
         $activityQuery = null;
         $activityParams = [];
-        $planetsQuery =  null;
+        $planetsQuery = null;
         $planetsParams = [];
 
         foreach ($array['items'] as $pos => $item) {
@@ -142,7 +142,7 @@ class ApiUtils
             $planetsParams[":player_id_{$pos}"] = (int)$item['player']['id'];
             $planetsParams[":planet_id_{$pos}"] = (int)$item['planet']['id'];
             $planetsParams[":planet_name_{$pos}"] = $item['planet']['name'];
-            $planetsParams[":moon_name_{$pos}"] = '';
+            $planetsParams[":moon_name_{$pos}"] = $item['moon'] ? $item['moon']['name'] : '';
             $planetsParams[":moon_size_{$pos}"] = $item['moon'] ? (int)$item['moon']['size'] : 0;
             $planetsParams[":field_me_{$pos}"] = $item['debris'] ? (int)$item['debris']['metal'] : 0;
             $planetsParams[":field_cry_{$pos}"] = $item['debris'] ? (int)$item['debris']['crystal'] : 0;
@@ -189,15 +189,15 @@ class ApiUtils
                   VALUES {$planetsQuery}";
             DB::insert($planetsQuery, $planetsParams);
 
-            // System update date
-            $dateParams = [
-                ':gal' => $array['galaxy'],
-                ':sys' => $array['system'],
-                ':updated' => date('Y-m-d H:i:s'),
-            ];
-            $dateQuery = "REPLACE INTO ovg_system_dates (gal, sys, updated) VALUES (:gal, :sys, :updated)";
-            DB::insert($dateQuery, $dateParams);
         }
+        // System update date
+        $dateParams = [
+            ':gal' => $array['galaxy'],
+            ':sys' => $array['system'],
+            ':updated' => date('Y-m-d H:i:s'),
+        ];
+        $dateQuery = "REPLACE INTO ovg_system_dates (gal, sys, updated) VALUES (:gal, :sys, :updated)";
+        DB::insert($dateQuery, $dateParams);
 
         return $result;
     }
@@ -323,6 +323,7 @@ class ApiUtils
 
         return [
             'id' => (int)self::parseMoonId($cols[3]),
+            'name' => self::parseMoonName($cols[3]),
             'size' => self::parseMoonSize($cols[3]),
             'activity' => self::parseActivity($cols[3]),
         ];
@@ -331,6 +332,11 @@ class ApiUtils
     public static function parseMoonId($col)
     {
         return self::parseVal('data-moon-id="([0-9]+)"', $col);
+    }
+
+    public static function parseMoonName($col)
+    {
+        return trim(self::parseVal('<span class="textNormal">([\w\d\s]+)</span>', $col));
     }
 
     public static function parseMoonSize($col)

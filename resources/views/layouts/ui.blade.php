@@ -8,29 +8,32 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
     <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
+        body {
+            background: #212529;
+            background: #343a40;
+            background: #2f2f2f;
+            color: #fff;
         }
 
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
+        .table > :not(caption) > * > * {
+            padding: .3rem .4rem;
         }
-	    .color1, .color1 a {color:#A7F9A7;}
-		.color2, .color2 a {color:#70C070;}
-		.color3, .color3 a {color:#409040;}
-		.color4, .color4 a {color:yellow;}
-		.color5, .color5 a {color:#FF9900;}
-		.color6, .color6 a {color:red;}
-		.color7, .color7 a {color:#666;}
-        main {
-            /*background-color: #2f2f2f;*/
-        }
+
+        .color1, .color1 a {color: #a0faa0;}
+        .color2, .color2 a {color: #70c070;}
+        .color3, .color3 a {color: #327832;}
+        .color4, .color4 a {color: yellow;}
+        .color5, .color5 a {color: #FF9900;}
+        .color6, .color6 a {color: #F00;}
+        .color7, .color7 a {color: #333;}
+
+        .color-a {color: #f48406 !important;}
+        .color-o {color: #f3f !important;}
+        .color-v {color: aqua !important;}
+        .color-b {color: #fff !important;}
+        .color-i {color: #6e6e6e !important;}
+        .color-ii {color: #4f4f4f !important;}
+        .color-hp {color: #ff6 !important;}
     </style>
 </head>
 <body>
@@ -48,13 +51,16 @@
                 <div class="collapse navbar-collapse" id="navbar">
                     <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->url() == route('main') ? 'active' : '' }}" href="{{ route('main') }}">Main</a>
+                            <a class="nav-link {{ request()->url() == route('main') ? 'active' : '' }}"
+                               href="{{ route('main') }}">Main</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->url() == route('galaxy') ? 'active' : '' }}" href="{{ route('galaxy') }}">Galaxy view</a>
+                            <a class="nav-link {{ request()->is('*/galaxy*') ? 'active' : '' }}"
+                               href="{{ route('galaxy', ['gal' => isset($galaxy) ? $galaxy : '']) }}">Galaxy view</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->url() == route('changelog') ? 'active' : '' }}" href="{{ route('changelog') }}">Changelog</a>
+                            <a class="nav-link {{ request()->url() == route('changelog') ? 'active' : '' }}"
+                               href="{{ route('changelog') }}">Changelog</a>
                         </li>
                     </ul>
                     {{--<form>
@@ -71,21 +77,10 @@
 @section('main')
     Main section
 @endsection
-@yield('main')
+<main class="py-4 container-fluid">
+    @yield('main')
+</main>
 
-
-@section('main')
-    <footer class="text-muted py-5">
-        <div class="container">
-            <p class="float-end mb-1">
-                <a href="#">Back to top</a>
-            </p>
-            <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-            <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a
-                    href="/docs/5.0/getting-started/introduction/">getting started guide</a>.</p>
-        </div>
-    </footer>
-@endsection
 @yield('footer')
 
 
