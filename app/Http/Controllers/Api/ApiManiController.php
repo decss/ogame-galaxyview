@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class ApiManiController extends Controller
 {
-//    private $request;
     private $response;
 
     public function __construct()

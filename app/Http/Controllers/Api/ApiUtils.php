@@ -4,6 +4,9 @@
 namespace App\Http\Controllers\Api;
 
 
+use App\Models\EventPlayer;
+use App\Models\EventSystem;
+use App\Models\SystemDate;
 use Illuminate\Support\Facades\DB;
 
 class ApiUtils
@@ -66,7 +69,6 @@ class ApiUtils
         $i = 0;
         $allyIds = [];
         $playerIds = [];
-
 
         $allyQuery = null;
         $allyParams = [];
@@ -141,7 +143,7 @@ class ApiUtils
             $planetsParams[":pos_{$pos}"] = (int)$pos;
             $planetsParams[":player_id_{$pos}"] = (int)$item['player']['id'];
             $planetsParams[":planet_id_{$pos}"] = (int)$item['planet']['id'];
-            $planetsParams[":planet_name_{$pos}"] = $item['planet']['name'];
+            $planetsParams[":planet_name_{$pos}"] = (string)$item['planet']['name'];
             $planetsParams[":moon_name_{$pos}"] = $item['moon'] ? $item['moon']['name'] : '';
             $planetsParams[":moon_size_{$pos}"] = $item['moon'] ? (int)$item['moon']['size'] : 0;
             $planetsParams[":field_me_{$pos}"] = $item['debris'] ? (int)$item['debris']['metal'] : 0;
@@ -153,7 +155,6 @@ class ApiUtils
 
             $i++;
         }
-
 
         // Alliances
         if ($allyQuery) {
@@ -202,6 +203,257 @@ class ApiUtils
         return $result;
     }
 
+    public static function updateEvents($array)
+    {
+        $result = [
+            'player' => [],
+            'system' => [],
+        ];
+
+        // If system was not scanned before
+        $dates = SystemDate::where(['gal' => $array['galaxy'], 'sys' => $array['system']])->first();
+        if (!isset($dates->updated)) {
+            return $result;
+        }
+
+        $models = [];
+        $playerEvents = self::getPlayerEvents($array);
+        foreach ($playerEvents as $playerId => $events) {
+            foreach ($events as $type => $event) {
+                $models[] = [
+                    'player_id' => (int)$playerId,
+                    'type' => (int)$type,
+                    'json' => json_encode($event),
+                ];
+
+                if (!isset($result['player'][$type])) {
+                    $result['player'][$type] = 1;
+                } else {
+                    $result['player'][$type]++;
+                }
+            }
+        }
+        if ($models) {
+            EventPlayer::insert($models);
+        }
+
+        $models = [];
+        $systemEvents = self::getSystemEvents($array);
+        foreach ($systemEvents as $pos => $events) {
+            foreach ($events as $type => $event) {
+                $playerId = isset($array['items'][$pos]['player']['id'])
+                    ? $array['items'][$pos]['player']['id']
+                    : $event['player_id'];
+
+                $threshold = 0;
+                if (in_array($type, [20, 21])) {
+                    $threshold = $event['size'];
+                } elseif (in_array($type, [30, 31, 32, 33])) {
+                    $threshold = $event['field'];
+                }
+
+                $models[] = [
+                    'gal' => (int)$array['galaxy'],
+                    'sys' => (int)$array['system'],
+                    'pos' => (int)$pos,
+                    'player_id' => (int)$playerId,
+                    'type' => (int)$type,
+                    'json' => json_encode($event),
+                    'threshold' => $threshold,
+                ];
+                if (!isset($result['system'][$type])) {
+                    $result['system'][$type] = 1;
+                } else {
+                    $result['system'][$type]++;
+                }
+            }
+        }
+        if ($models) {
+            EventSystem::insert($models);
+        }
+
+        return $result;
+    }
+
+    private static function getSystemEvents(array $array)
+    {
+        $ids = [];
+        $changes = [];
+        $dbPlanets = [];
+        foreach ($array['items'] as $pos => $item) {
+            $ids[] = $pos;
+        }
+
+        if ($ids) {
+            $dbRows = DB::select("SELECT * FROM ovg_systems WHERE gal = :gal AND sys = :sys AND pos IN (" . implode(',', $ids) . ")", [
+                ':gal' => $array['galaxy'],
+                ':sys' => $array['system'],
+            ]);
+            foreach ($dbRows as $row) {
+                $dbPlanets[$row->pos] = $row;
+            }
+        }
+
+        // New events
+        foreach ($array['items'] as $pos => $item) {
+            // 10 new planet
+            if (!isset($dbPlanets[$pos])) {
+                $changes[$pos][10] = [
+                    'name' => $item['planet']['name'],
+                    'player_id' => $item['player']['id'],
+                ];
+            }
+            // 20 new moon
+            if ($item['moon'] && $item['moon']['size'] && !isset($dbPlanets[$pos]->moon_size)) {
+                $changes[$pos][20] = [
+                    'name' => $item['moon']['name'],
+                    'size' => $item['moon']['size'],
+                    'player_id' => $item['player']['id'],
+                ];
+            }
+
+            $arrField = $item['debris'] ? ($item['debris']['metal'] + $item['debris']['crystal']) : 0;
+            $dbField = isset($dbPlanets[$pos]) ? intval($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry) : 0;
+            // 30 new field
+            if ($arrField && !$dbField) {
+                $changes[$pos][30] = [
+                    'field' => $arrField,
+                    'field_me' => $item['debris']['metal'],
+                    'field_cry' => $item['debris']['crystal'],
+                ];
+                // 32 increased field
+                // 33 decreased field
+            } elseif (($arrField > $dbField && $dbField > 0) || ($arrField > 0 && $arrField < $dbField)) {
+                $act = ($arrField > $dbField) ? 32 : 33;
+                $changes[$pos][$act] = [
+                    'field' => $arrField,
+                    'field_me' => $item['debris']['metal'],
+                    'field_cry' => $item['debris']['crystal'],
+                    'oldfield' => $dbField,
+                    'oldfield_me' => $dbPlanets[$pos]->field_me,
+                    'oldfield_cry' => $dbPlanets[$pos]->field_cry,
+                ];
+            }
+        }
+
+        // Destroy events
+        foreach ($dbPlanets as $pos => $dbPlanet) {
+            $item = $array['items'][$pos];
+            // 11 destroyed planet
+            if (!$item['planet']) {
+                $changes[$pos][11] = [
+                    'name' => $dbPlanet->planet_name,
+                    'player_id' => $dbPlanet->player_id,
+                ];
+            }
+            // 21 destroyed moon
+            if ($dbPlanets[$pos]->moon_size && !$item['moon']) {
+                $changes[$pos][21] = [
+                    'name' => $dbPlanets[$pos]->moon_name,
+                    'size' => $dbPlanets[$pos]->moon_size,
+                    'player_id' => $dbPlanet->player_id,
+                ];
+            }
+            // 31 removed field
+            if (($dbPlanets[$pos]->field_me || $dbPlanets[$pos]->field_cry) && !$item['debris']) {
+                $changes[$pos][31] = [
+                    'field' => ($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry),
+                    'field_me' => $dbPlanets[$pos]->field_me,
+                    'field_cry' => $dbPlanets[$pos]->field_cry,
+                ];
+            }
+        }
+
+        return $changes;
+    }
+
+    private static function getPlayerEvents(array $array)
+    {
+        $ids = [];
+        foreach ($array['items'] as $item) {
+            $ids[] = $item['player']['id'];
+        }
+        if ($ids) {
+            $dbPlayers = DB::select("SELECT * FROM ogv_players WHERE id IN (" . implode(',', $ids) . ")");
+        }
+
+        $changes = [];
+        foreach ($array['items'] as $item) {
+            $player = $item['player'];
+            if (isset($dbPlayers)) {
+                $dbPlayer = self::getDbItemById($dbPlayers, $player['id']);
+            }
+            if (!isset($dbPlayer)) {
+                continue;
+            }
+
+            $id = $player['id'];
+            $allyId = $player['alliance'] ? $player['alliance']['id'] : 0;
+
+            // Name
+            if ($dbPlayer->name != $player['name']) {
+                $changes[$id][50] = [
+                    'old' => $dbPlayer->name,
+                    'new' => $player['name']
+                ];
+            }
+
+            // Rank
+            // 5% threshold
+            $threshold = abs($dbPlayer->rank - $player['rank']) / $player['rank'];
+            if ($dbPlayer->rank != $player['rank'] && $threshold > 0.05) {
+                $changes[$id][60] = [
+                    'old' => $dbPlayer->rank,
+                    'new' => $player['rank'],
+                ];
+            }
+
+            // Alliance
+            if ($dbPlayer->ally_id != $allyId) {
+                $changes[$id][70] = [
+                    'old' => intval($dbPlayer->ally_id),
+                    'new' => $allyId
+                ];
+            }
+
+            // Status
+            $states = [];
+            $stateTypes = ["o" => 41, "v" => 42, "b" => 43, "i" => 44, "hp" => 45];
+            foreach (["o", "v", "b", "i", "I", "hp"] as $state) {
+                $value = in_array($state, $player['states']) ? 1 : 0;
+                $states[$state] = $value;
+            }
+            // Fix: I => i
+            if ($states['I'] == 1) {
+                $states['i'] = 2;
+            }
+            unset($states['I']);
+
+            foreach ($states as $s => $val) {
+                $sLc = strtolower($s);
+                if ($dbPlayer->{$sLc} != $val) {
+                    $type = $stateTypes[$sLc];
+                    $changes[$id][$type] = [
+                        'old' => $dbPlayer->{$sLc},
+                        'new' => $states[$s],
+                    ];
+                }
+            }
+        }
+
+        return $changes;
+    }
+
+    private static function getDbItemById($items, $id)
+    {
+        foreach ($items as $item) {
+            if ($id && $item && $item->id == $id) {
+                return $item;
+            }
+        }
+        return [];
+    }
+
 
     /** Utility
      */
@@ -219,7 +471,7 @@ class ApiUtils
     public static function parseVal($pattern, $text, $index = 1)
     {
         preg_match("~{$pattern}~i", $text, $matches);
-        if ($matches[$index]) {
+        if ($matches && $matches[$index]) {
             return $matches[$index];
         }
 
@@ -289,7 +541,7 @@ class ApiUtils
 
     public static function parsePlanetName($col)
     {
-        return self::parseVal('<h1>Planet: <span class="textNormal">([\w\d\s]+)</span></h1>', $col);
+        return self::parseVal('<h1>Planet: <span class="textNormal">([\w\d\s_-]+)</span></h1>', $col);
     }
 
     public static function parseActivity($col)

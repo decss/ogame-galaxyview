@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ApiController extends ApiManiController
 {
@@ -17,13 +18,20 @@ class ApiController extends ApiManiController
             return $this->getResp();
         }
 
+        Log::channel('single')->info(
+            "\r\n------------------------------------------------------------------------------\r\n"
+            . urldecode($postData)
+        );
+
         $array = ApiUtils::parseGalaxy($postData);
-        $result = ApiUtils::updateSystem($array);
+        $result['events'] = ApiUtils::updateEvents($array);
+        $result['system'] = ApiUtils::updateSystem($array);
 
         $this->setRespStatus("success");
+
         $this->setRespMessage("System updated {$array['galaxy']}:{$array['system']}");
         $this->setRespData(
-            json_encode($result, JSON_PRETTY_PRINT) . "\r\n"
+            json_encode($result, JSON_PRETTY_PRINT) . "\r\n------------------\r\n"
             . json_encode($array, JSON_PRETTY_PRINT)
         );
 

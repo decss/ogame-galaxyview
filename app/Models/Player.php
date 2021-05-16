@@ -70,7 +70,7 @@ class Player extends Model
         $whereStatus = null;
 
         if ($request->get('name')) {
-            $where .= ($where ? ' AND ' : '') . 'name LIKE "%' . $request->get('name') . '%"';
+            $where .= ($where ? ' AND ' : '') . 'name LIKE "%' . trim($request->get('name')) . '%"';
         }
         if (intval($request->get('rankMin'))) {
             $params[':rankMin'] = intval($request->get('rankMin'));

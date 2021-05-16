@@ -87,6 +87,7 @@
         @endif
     </table>
 
+    {{--
     <h4>Search alliance</h4>
     <form class="row_DEL mb-4" method="post" action="">
         // TODO:
@@ -96,5 +97,6 @@
     <form class="row_DEL mb-4" method="post" action="">
         // TODO:
     </form>
+    --}}
 
 @endsection

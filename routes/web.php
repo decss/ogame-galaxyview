@@ -15,6 +15,7 @@
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Ui\UiAllianceController;
+use App\Http\Controllers\Ui\UiEventsController;
 use App\Http\Controllers\Ui\UiController;
 use App\Http\Controllers\Ui\UiGalaxyController;
 use App\Http\Controllers\Ui\UiPlayerController;
@@ -41,12 +42,11 @@ $router->group(['prefix' => 'ui', 'namespace' => '\\'], function () use ($router
     $router->post('galaxy/{gal}:{sys}', ['as' => 'galaxy.view', 'uses' => UiGalaxyController::class . '@viewPost']);
     $router->get('galaxy[/{gal}]', ['as' => 'galaxy', 'uses' => UiGalaxyController::class . '@index']);
 
-
+    // Alliance
     $router->get('alliance/{id}', ['as' => 'alliance', 'uses' => UiAllianceController::class . '@index']);
 
-    $router->get('changelog', ['as' => 'changelog', function () {
-        return view('index');
-    }]);
+    // Changelog
+    $router->get('events', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
 });
 
 $router->group(['prefix' => '/api', 'namespace' => '\\'], function () use ($router) {
