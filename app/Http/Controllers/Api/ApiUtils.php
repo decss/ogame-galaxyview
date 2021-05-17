@@ -511,7 +511,7 @@ class ApiUtils
         if ($minute < 10) {
             $minute = '00';
         } else {
-            $minute = $minute{0} . '0';
+            $minute = $minute[0] . '0';
         }
 
         return [
