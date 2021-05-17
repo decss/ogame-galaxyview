@@ -275,98 +275,6 @@ class ApiUtils
         return $result;
     }
 
-    private static function getSystemEvents(array $array)
-    {
-        $ids = [];
-        $changes = [];
-        $dbPlanets = [];
-        foreach ($array['items'] as $pos => $item) {
-            $ids[] = $pos;
-        }
-
-        if ($ids) {
-            $dbRows = DB::select("SELECT * FROM ovg_systems WHERE gal = :gal AND sys = :sys AND pos IN (" . implode(',', $ids) . ")", [
-                ':gal' => $array['galaxy'],
-                ':sys' => $array['system'],
-            ]);
-            foreach ($dbRows as $row) {
-                $dbPlanets[$row->pos] = $row;
-            }
-        }
-
-        // New events
-        foreach ($array['items'] as $pos => $item) {
-            // 10 new planet
-            if (!isset($dbPlanets[$pos])) {
-                $changes[$pos][10] = [
-                    'name' => $item['planet']['name'],
-                    'player_id' => $item['player']['id'],
-                ];
-            }
-            // 20 new moon
-            if ($item['moon'] && $item['moon']['size'] && !isset($dbPlanets[$pos]->moon_size)) {
-                $changes[$pos][20] = [
-                    'name' => $item['moon']['name'],
-                    'size' => $item['moon']['size'],
-                    'player_id' => $item['player']['id'],
-                ];
-            }
-
-            $arrField = $item['debris'] ? ($item['debris']['metal'] + $item['debris']['crystal']) : 0;
-            $dbField = isset($dbPlanets[$pos]) ? intval($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry) : 0;
-            // 30 new field
-            if ($arrField && !$dbField) {
-                $changes[$pos][30] = [
-                    'field' => $arrField,
-                    'field_me' => $item['debris']['metal'],
-                    'field_cry' => $item['debris']['crystal'],
-                ];
-                // 32 increased field
-                // 33 decreased field
-            } elseif (($arrField > $dbField && $dbField > 0) || ($arrField > 0 && $arrField < $dbField)) {
-                $act = ($arrField > $dbField) ? 32 : 33;
-                $changes[$pos][$act] = [
-                    'field' => $arrField,
-                    'field_me' => $item['debris']['metal'],
-                    'field_cry' => $item['debris']['crystal'],
-                    'oldfield' => $dbField,
-                    'oldfield_me' => $dbPlanets[$pos]->field_me,
-                    'oldfield_cry' => $dbPlanets[$pos]->field_cry,
-                ];
-            }
-        }
-
-        // Destroy events
-        foreach ($dbPlanets as $pos => $dbPlanet) {
-            $item = $array['items'][$pos];
-            // 11 destroyed planet
-            if (!$item['planet']) {
-                $changes[$pos][11] = [
-                    'name' => $dbPlanet->planet_name,
-                    'player_id' => $dbPlanet->player_id,
-                ];
-            }
-            // 21 destroyed moon
-            if ($dbPlanets[$pos]->moon_size && !$item['moon']) {
-                $changes[$pos][21] = [
-                    'name' => $dbPlanets[$pos]->moon_name,
-                    'size' => $dbPlanets[$pos]->moon_size,
-                    'player_id' => $dbPlanet->player_id,
-                ];
-            }
-            // 31 removed field
-            if (($dbPlanets[$pos]->field_me || $dbPlanets[$pos]->field_cry) && !$item['debris']) {
-                $changes[$pos][31] = [
-                    'field' => ($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry),
-                    'field_me' => $dbPlanets[$pos]->field_me,
-                    'field_cry' => $dbPlanets[$pos]->field_cry,
-                ];
-            }
-        }
-
-        return $changes;
-    }
-
     private static function getPlayerEvents(array $array)
     {
         $ids = [];
@@ -383,7 +291,7 @@ class ApiUtils
             if (isset($dbPlayers)) {
                 $dbPlayer = self::getDbItemById($dbPlayers, $player['id']);
             }
-            if (!isset($dbPlayer)) {
+            if (!isset($dbPlayer) || !$dbPlayer) {
                 continue;
             }
 
@@ -438,6 +346,102 @@ class ApiUtils
                         'new' => $states[$s],
                     ];
                 }
+            }
+        }
+
+        return $changes;
+    }
+
+    private static function getSystemEvents(array $array)
+    {
+        $ids = [];
+        $changes = [];
+        $dbPlanets = [];
+        foreach ($array['items'] as $pos => $item) {
+            $ids[] = $pos;
+        }
+
+        if ($ids) {
+            $dbRows = DB::select("SELECT * FROM ovg_systems WHERE gal = :gal AND sys = :sys AND pos IN (" . implode(',', $ids) . ")", [
+                ':gal' => $array['galaxy'],
+                ':sys' => $array['system'],
+            ]);
+            foreach ($dbRows as $row) {
+                $dbPlanets[$row->pos] = $row;
+            }
+        }
+
+        // New events
+        foreach ($array['items'] as $pos => $item) {
+            // 10 new planet
+            if (!isset($dbPlanets[$pos])) {
+                $changes[$pos][10] = [
+                    'name' => $item['planet']['name'],
+                    'player_id' => $item['player']['id'],
+                ];
+            }
+            // 20 new moon
+            if ($item['moon'] && $item['moon']['size'] && !isset($dbPlanets[$pos]->moon_size)) {
+                $changes[$pos][20] = [
+                    'name' => $item['moon']['name'],
+                    'size' => $item['moon']['size'],
+                    'player_id' => $item['player']['id'],
+                ];
+            }
+
+            // threshold: $arrField > 10 k
+            $arrField = $item['debris'] ? ($item['debris']['metal'] + $item['debris']['crystal']) : 0;
+            $dbField = isset($dbPlanets[$pos]) ? intval($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry) : 0;
+            // 30 new field
+            if ($arrField && !$dbField && $dbField >= 10000) {
+                $changes[$pos][30] = [
+                    'field' => $arrField,
+                    'field_me' => $item['debris']['metal'],
+                    'field_cry' => $item['debris']['crystal'],
+                ];
+                // 32 increased field
+                // 33 decreased field
+            } elseif (
+                (($arrField > $dbField && $dbField > 0) || ($arrField > 0 && $arrField < $dbField))
+                && $dbField >= 10000
+            ) {
+                $act = ($arrField > $dbField) ? 32 : 33;
+                $changes[$pos][$act] = [
+                    'field' => $arrField,
+                    'field_me' => $item['debris']['metal'],
+                    'field_cry' => $item['debris']['crystal'],
+                    'oldfield' => $dbField,
+                    'oldfield_me' => $dbPlanets[$pos]->field_me,
+                    'oldfield_cry' => $dbPlanets[$pos]->field_cry,
+                ];
+            }
+        }
+
+        // Destroy events
+        foreach ($dbPlanets as $pos => $dbPlanet) {
+            $item = $array['items'][$pos];
+            // 11 destroyed planet
+            if (!$item['planet']) {
+                $changes[$pos][11] = [
+                    'name' => $dbPlanet->planet_name,
+                    'player_id' => $dbPlanet->player_id,
+                ];
+            }
+            // 21 destroyed moon
+            if ($dbPlanets[$pos]->moon_size && !$item['moon']) {
+                $changes[$pos][21] = [
+                    'name' => $dbPlanets[$pos]->moon_name,
+                    'size' => $dbPlanets[$pos]->moon_size,
+                    'player_id' => $dbPlanet->player_id,
+                ];
+            }
+            // 31 removed field
+            if (($dbPlanets[$pos]->field_me || $dbPlanets[$pos]->field_cry) && !$item['debris']) {
+                $changes[$pos][31] = [
+                    'field' => ($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry),
+                    'field_me' => $dbPlanets[$pos]->field_me,
+                    'field_cry' => $dbPlanets[$pos]->field_cry,
+                ];
             }
         }
 
@@ -628,7 +632,7 @@ class ApiUtils
             $cols = explode("</td>", $row);
             return [
                 'id' => (int)self::parseVal('data-playerid="([0-9]+)"', $cols[5]),
-                'name' => self::parseVal('<h1>Player: <span>([0-9\w\s]+)</span></h1>', $cols[5]),
+                'name' => self::parseVal('<h1>Player: <span>([0-9\w\s_-]+)</span></h1>', $cols[5]),
                 'rank' => self::parsePlayerRank($cols[5]),
                 'states' => self::parsePlayerStates($cols[5]),
                 'alliance' => self::parsePlayerAlliance($cols[6]),

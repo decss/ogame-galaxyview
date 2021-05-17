@@ -18,10 +18,10 @@ class ApiController extends ApiManiController
             return $this->getResp();
         }
 
-        Log::channel('single')->info(
-            "\r\n------------------------------------------------------------------------------\r\n"
-            . urldecode($postData)
-        );
+        // og::channel('single')->info(
+        //    "\r\n------------------------------------------------------------------------------\r\n"
+        //    . urldecode($postData)
+        // ;
 
         $array = ApiUtils::parseGalaxy($postData);
         $result['events'] = ApiUtils::updateEvents($array);
