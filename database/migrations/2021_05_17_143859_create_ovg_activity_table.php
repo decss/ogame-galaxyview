@@ -13,10 +13,10 @@ class CreateOvgActivityTable extends Migration
      */
     public function up()
     {
-        Schema::create('ovg_activity', function (Blueprint $table) {
+        Schema::create('ovg_activity1', function (Blueprint $table) {
             $table->id();
             $table->integer('player_id')->default(0);
-            $table->string('coords', 255)->nullable();
+            $table->string('coords', 100)->nullable();
             $table->smallInteger('type')->default(0)->comment('1-planet, 2-moon');
             $table->string('date', 16)->nullable();
             $table->string('time', 16)->nullable();

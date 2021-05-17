@@ -81,7 +81,7 @@ class ApiUtils
 
         foreach ($array['items'] as $pos => $item) {
             $playerId = (int)$item['player']['id'];
-            $allyId = (int)$item['player']['alliance']['id'];
+            $allyId = isset($item['player']['alliance']['id']) ? $item['player']['alliance']['id'] : 0;
 
             // Alliances
             if ($allyId && !in_array($allyId, $allyIds)) {
@@ -105,7 +105,7 @@ class ApiUtils
 
                 $playerParams[":id_{$i}"] = $item['player']['id'];
                 $playerParams[":name_{$i}"] = $item['player']['name'];
-                $playerParams[":ally_id_{$i}"] = (int)$item['player']['alliance']['id'];
+                $playerParams[":ally_id_{$i}"] = (int)$allyId;
                 $playerParams[":rank_{$i}"] = (int)$item['player']['rank'];
                 $playerParams[":a_{$i}"] = (in_array('A', $item['player']['states']) ? 1 : 0);
                 $playerParams[":o_{$i}"] = (in_array('o', $item['player']['states']) ? 1 : 0);
