@@ -15,8 +15,8 @@
     'use strict';
 
     const REFRESH = 200;
-    // const API_URL = 'http://test.local/ogame/api.php';
-    const API_URL = 'http://ogame.local/api';
+    // const API_URL = 'http://ogame.local/api';
+    const API_URL = 'https://dev.soft-szn.ru/ogame/api';
 
     var turn = 0;
 
