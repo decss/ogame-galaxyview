@@ -45,8 +45,9 @@ $router->group(['prefix' => 'ui', 'namespace' => '\\'], function () use ($router
     // Alliance
     $router->get('alliance/{id}', ['as' => 'alliance', 'uses' => UiAllianceController::class . '@index']);
 
-    // Changelog
+    // Events
     $router->get('events', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
+    $router->post('events', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
 });
 
 $router->group(['prefix' => '/api', 'namespace' => '\\'], function () use ($router) {

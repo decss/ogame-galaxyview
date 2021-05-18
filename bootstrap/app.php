@@ -48,6 +48,11 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+$app->singleton('cookie', function () use ($app) {
+    return $app->loadComponent('session', 'Illuminate\Cookie\CookieServiceProvider', 'cookie');
+});
+
+$app->bind('Illuminate\Contracts\Cookie\QueueingFactory', 'cookie');
 /*
 |--------------------------------------------------------------------------
 | Register Config Files
@@ -72,9 +77,11 @@ $app->configure('app');
 |
 */
 
-// $app->middleware([
-//     App\Http\Middleware\ExampleMiddleware::class
-// ]);
+$app->middleware([
+    // App\Http\Middleware\ExampleMiddleware::class
+    // \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+    // 'Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse',  // <--- added
+]);
 
 // $app->routeMiddleware([
 //     'auth' => App\Http\Middleware\Authenticate::class,

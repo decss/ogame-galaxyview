@@ -5,36 +5,36 @@
     <div class="row">
         <div class="col-12 col-md-6">
             <h4>System changes</h4>
-            <form class="row small" action="{{ route('events') }}">
+            <form class="row small" action="{{ route('events') }}" method="post">
                 <div class="col-4">
                     <div class="form-check">
-                        <label><input name="system[10]" class="form-check-input" type="checkbox" value="1">New planet</label>
+                        <label><input name="system[]" class="form-check-input" type="checkbox" value="10" {{ in_array('10', $filters['system']) ? 'checked' : '' }}>New planet</label>
                     </div>
                     <div class="form-check">
-                        <label><input name="system[11]" class="form-check-input" type="checkbox" value="1">Destroyed planet</label>
+                        <label><input name="system[]" class="form-check-input" type="checkbox" value="11" {{ in_array('11', $filters['system']) ? 'checked' : '' }}>Destroyed planet</label>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="form-check">
-                        <label><input name="system[20]" class="form-check-input" type="checkbox" value="1">New moon</label>
+                        <label><input name="system[]" class="form-check-input" type="checkbox" value="20" {{ in_array('20', $filters['system']) ? 'checked' : '' }}>New moon</label>
                     </div>
                     <div class="form-check">
-                        <label><input name="system[12]" class="form-check-input" type="checkbox" value="1">Destroyed moon</label>
+                        <label><input name="system[]" class="form-check-input" type="checkbox" value="22" {{ in_array('22', $filters['system']) ? 'checked' : '' }}>Destroyed moon</label>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="form-check">
-                        <label><input name="system[30-32]" class="form-check-input" type="checkbox" value="1">New/Inc debris</label>
+                        <label><input name="system[]" class="form-check-input" type="checkbox" value="30,32" {{ in_array('30,32', $filters['system']) ? 'checked' : '' }}>New/Inc debris</label>
                     </div>
                     <div class="form-check">
-                        <label><input name="system[31-33]" class="form-check-input" type="checkbox" value="1">Removed/Dec debris</label>
+                        <label><input name="system[]" class="form-check-input" type="checkbox" value="31,33" {{ in_array('31,33', $filters['system']) ? 'checked' : '' }}>Removed/Dec debris</label>
                     </div>
                 </div>
                 <div class="col-12 text-end mb-1">
                     <div class="input-group input-group-sm" style="">
                         <span class="input-group-text" id="inputGroup-sizing-sm">Threshold:</span>
-                        <input type="text" class="form-control" aria-label="Sizing example input" placeholder="Minimum moon or debris size">
-                        <button type="submit" class="btn btn-primary btn-sm">Filter events</button>
+                        <input type="text" name="systemTh" value="{{ ($filters['systemTh'] ? $filters['systemTh'] : '') }}" class="form-control" aria-label="Sizing example input" placeholder="Minimum moon or debris size">
+                        <button type="submit" name="filterSystem" class="btn btn-primary btn-sm">Filter events</button>
                     </div>
                 </div>
             </form>
@@ -83,37 +83,37 @@
 
         <div class="col-12 col-md-6">
             <h4>Player changes</h4>
-            <form class="row small" action="{{ route('events') }}">
+            <form class="row small" action="{{ route('events') }}" method="post">
                 <div class="col-4">
                     <div class="form-check">
-                        <label><input name="system[40]" class="form-check-input" type="checkbox" value="1">Name changed</label>
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="40" {{ in_array('40', $filters['player']) ? 'checked' : '' }}>Name changed</label>
                     </div>
                     <div class="form-check">
-                        <label><input name="system[60]" class="form-check-input" type="checkbox" value="1">Rank changed</label>
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="60" {{ in_array('60', $filters['player']) ? 'checked' : '' }}>Rank changed</label>
                     </div>
                     <div class="form-check">
-                        <label><input name="system[70]" class="form-check-input" type="checkbox" value="1">Joined/left alliance</label>
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="70" {{ in_array('70', $filters['player']) ? 'checked' : '' }}>Joined/left alliance</label>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="form-check">
-                        <label><input name="system[41]" class="form-check-input" type="checkbox" value="1">Status <span class="color-o">Outlaw</span></label>
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="41" {{ in_array('41', $filters['player']) ? 'checked' : '' }}>Status <span class="color-o">Outlaw</span></label>
                     </div>
                     <div class="form-check">
-                        <label><input name="system[42]" class="form-check-input" type="checkbox" value="1">Status <span class="color-v">Vacation</span></label>
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="42" {{ in_array('42', $filters['player']) ? 'checked' : '' }}>Status <span class="color-v">Vacation</span></label>
                     </div>
                     <div class="form-check">
-                        <label><input name="system[43]" class="form-check-input" type="checkbox" value="1">Status <span class="color-b">Banned</span></label>
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="43" {{ in_array('43', $filters['player']) ? 'checked' : '' }}>Status <span class="color-b">Banned</span></label>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="form-check">
-                        <label><input name="system[44]" class="form-check-input" type="checkbox" value="1">Status <span class="color-i">Inactive</span></label>
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="44" {{ in_array('44', $filters['player']) ? 'checked' : '' }}>Status <span class="color-i">Inactive</span></label>
                     </div>
                     <div class="form-check">
-                        <label><input name="system[45]" class="form-check-input" type="checkbox" value="1">Status <span class="color-hp">Honourable</span></label>
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="45" {{ in_array('45', $filters['player']) ? 'checked' : '' }}>Status <span class="color-hp">Honourable</span></label>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-sm">Filter events</button>
+                    <button type="submit" name="filterPlayer" class="btn btn-primary btn-sm">Filter events</button>
                 </div>
                 <div class="col-12 text-end mb-1">
                 </div>
