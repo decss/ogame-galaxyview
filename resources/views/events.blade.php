@@ -49,7 +49,7 @@
                     @foreach($systemEvents as $event)
                             <tr>
                                 <td>{{ $event['date'] }}</td>
-                                <td>{!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">player</a></td>
+                                <td>{!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a></td>
                                 <td>
                                     <a href="{{ route('galaxy.view', ['gal' => $event['gal'], 'sys' => $event['sys'], 'p' => $event['pos']]) }}">{{ $event['coords'] }}</a>
                                 </td>
@@ -131,7 +131,7 @@
                         @foreach($events as $playerId => $event)
                             <tr>
                                 <td>{{ $event['date'] }}</td>
-                                <td>{!! $event['player']->name !!}</td>
+                                <td>{!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a></td>
                                 <td>
                                     @foreach($event['rows'] as $row)
                                         <div>
