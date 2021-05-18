@@ -308,7 +308,10 @@ class ApiUtils
 
             // Rank
             // 5% threshold
-            $threshold = abs($dbPlayer->rank - $player['rank']) / $player['rank'];
+            $threshold = 0;
+            if (isset($dbPlayer->rank) && $player['rank']) {
+                $threshold = abs($dbPlayer->rank- $player['rank']) / $player['rank'];
+            }
             if ($dbPlayer->rank != $player['rank'] && $threshold > 0.05) {
                 $changes[$id][60] = [
                     'old' => $dbPlayer->rank,
@@ -644,10 +647,13 @@ class ApiUtils
 
     public static function parsePlayerRank($col)
     {
-        $rank = $col;
-        $rank = substr_replace($rank, null, 0, stripos($rank, 'Ranking:') + 8);
-        $rank = substr_replace($rank, null, stripos($rank, '</li>'));
-        $rank = trim(strip_tags($rank));
+        $rank = 0;
+        if (stristr($col, 'Ranking:')) {
+            $rank = $col;
+            $rank = substr_replace($rank, null, 0, stripos($rank, 'Ranking:') + 8);
+            $rank = substr_replace($rank, null, stripos($rank, '</li>'));
+            $rank = trim(strip_tags($rank));
+        }
 
         return $rank;
     }
