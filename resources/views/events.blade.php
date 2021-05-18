@@ -49,8 +49,10 @@
                     @foreach($systemEvents as $event)
                             <tr>
                                 <td>{{ $event['date'] }}</td>
-                                <td>{!! $event['player']->name !!}</td>
-                                <td><a href="{{ route('galaxy.view', ['gal' => $event['gal'], 'sys' => $event['sys'], 'p' => $event['pos']]) }}">{{ $event['coords'] }}</a></td>
+                                <td>{!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">player</a></td>
+                                <td>
+                                    <a href="{{ route('galaxy.view', ['gal' => $event['gal'], 'sys' => $event['sys'], 'p' => $event['pos']]) }}">{{ $event['coords'] }}</a>
+                                </td>
                                 <td>
                                     @foreach($event['rows'] as $row)
                                         <div>
@@ -59,17 +61,17 @@
                                         @elseif($row['type'] == 11)
                                             Destroyed planet <span class="text-warning">{{ $row['json']['name'] }}</span>
                                         @elseif($row['type'] == 20)
-                                            New moon <span class="text-warning">{{ $row['json']['name'] }}</span> ({{ $row['json']['size'] }} km)
+                                            New moon <span class="text-warning">{{ $row['json']['name'] }}</span> ({{ number_format($row['json']['size'], 0, '', ' ') }} km)
                                         @elseif($row['type'] == 21)
-                                            Destroyed moon <span class="text-warning">{{ $row['json']['name'] }}</span> {{ $row['json']['size'] }} km
+                                            Destroyed moon <span class="text-warning">{{ $row['json']['name'] }}</span> {{ number_format($row['json']['size'], 0, '', ' ') }} km
                                         @elseif($row['type'] == 30)
-                                            New debris field <span class="text-warning">{{ $row['json']['field'] }}</span> (me, cry)
+                                            New debris field <span class="text-warning">{{ number_format($row['json']['field'], 0, '.', ' ') }}</span>
                                         @elseif($row['type'] == 31)
-                                            Removed debris field <span class="text-warning">{{ $row['json']['field'] }}</span> (me, cry)
+                                            Removed debris field <span class="text-warning">{{ number_format($row['json']['field'], 0, '.', ' ') }}</span>
                                         @elseif($row['type'] == 32)
-                                            Increased debris field <span class="text-warning">{{ $row['json']['field'] }}</span> (me, cry)
+                                            Increased debris field <span class="text-warning">{{ number_format($row['json']['field'], 0, '.', ' ') }}</span>
                                         @elseif($row['type'] == 33)
-                                            Decreased debris field <span class="text-warning">{{ $row['json']['field'] }}</span> (me, cry)
+                                            Decreased debris field <span class="text-warning">{{ number_format($row['json']['field'], 0, '.', ' ') }}</span>
                                         @endif
                                         </div>
                                     @endforeach
