@@ -30,7 +30,7 @@
         .color-a {color: #f48406 !important;}
         .color-o {color: #f3f !important;}
         .color-v {color: aqua !important;}
-        .color-b {color: #fff !important;}
+        .color-b {color: #fff !important; text-decoration: line-through;}
         .color-i {color: #6e6e6e !important;}
         .color-ii {color: #4f4f4f !important;}
         .color-hp {color: #ff6 !important;}
@@ -51,7 +51,7 @@
                 <div class="collapse navbar-collapse" id="navbar">
                     <ul class="navbar-nav me-auto mb-2 mb-sm-0">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->url() == route('main') ? 'active' : '' }}"
+                            <a class="nav-link {{ request()->url() == route('main') || request()->is('*/players') ? 'active' : '' }}"
                                href="{{ route('main') }}">Main</a>
                         </li>
                         <li class="nav-item">
