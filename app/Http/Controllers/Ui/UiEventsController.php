@@ -112,7 +112,7 @@ class UiEventsController extends UiMainController
             'playerTypes' => [],
         ];
 
-        if ($_COOKIE['filters']) {
+        if (isset($_COOKIE['filters'])) {
             $filters = json_decode($_COOKIE['filters'], true);
         }
 
