@@ -147,21 +147,5 @@ class UiGalaxyController extends UiMainController
         }
 
         return self::$dates[0];
-        // $day = 3600 * 24;
-        // if ($diff <= $day * 1) {
-        //     return 'color1';
-        // } elseif ($diff <= $day * 4) {
-        //     return 'color2';
-        // } elseif ($diff <= $day * 7) {
-        //     return 'color3';
-        // } elseif ($diff <= $day * 14) {
-        //     return 'color4';
-        // } elseif ($diff <= $day * 30) {
-        //     return 'color5';
-        // } elseif ($diff <= $day * 90) {
-        //     return 'color6';
-        // } else {
-        //     return 'color7';
-        // }
     }
 }

@@ -43,6 +43,11 @@
                 <label class="form-check-label color-v" for="stauts-v">Vacation</label>
             </div>
             <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="status-not-v" id="stauts-not-v" value="1"
+                    {{ request()->get('status-not-v') ? 'checked' : '' }}>
+                <label class="form-check-label" for="stauts-not-v">Not in <span class="color-v">Vacation</span></label>
+            </div>
+            <div class="form-check form-check-inline">
                 <input class="form-check-input" type="checkbox" name="status[i]" id="stauts-i" value="1"
                     {{ isset(request()->get('status')['i']) ? 'checked' : '' }}>
                 <label class="form-check-label color-i" for="stauts-i">Inactive (i)</label>
@@ -77,7 +82,11 @@
                             <a href="{{ route('alliance', ['id' => $player->alliance->id]) }}">{{ $player->alliance->tag }}</a>
                         @endif
                     </td>
-                    <td>//TODO:</td>
+                    <td class="smaller text-start">
+                        @foreach($player->items as $item)
+                            <a href="{{ route('galaxy.view', ['gal' => $item->gal, 'sys' => $item->sys, 'p' => $item->pos]) }}" class="pe-1 {{ $item->getUpdateColor() }}">{{$item->coords}}</a>
+                        @endforeach
+                    </td>
                     <td>//TODO:</td>
                     <td>
                         <a href="{{ route('player', ['id' => $player->id]) }}">Player</a>

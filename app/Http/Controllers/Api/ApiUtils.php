@@ -395,7 +395,7 @@ class ApiUtils
             // threshold: $arrField > 10 k
             $arrField = $item['debris'] ? ($item['debris']['metal'] + $item['debris']['crystal']) : 0;
             $dbField = isset($dbPlanets[$pos]) ? intval($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry) : 0;
-            $dfThrashold = 10000;
+            $dfThrashold = 50000;
             // 30 new field
             if ($arrField && !$dbField && $arrField >= $dfThrashold) {
                 $changes[$pos][30] = [

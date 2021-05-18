@@ -12,10 +12,10 @@ class Player extends Model
 {
     protected $table = 'ogv_players';
 
-//    public function items()
-//    {
-//        return $this->hasMany(SystemItem::class);
-//    }
+    public function items()
+    {
+        return $this->hasMany(SystemItem::class);
+    }
 
     public function alliance()
     {
@@ -79,6 +79,9 @@ class Player extends Model
         if (intval($request->get('rankMax'))) {
             $params[':rankMax'] = intval($request->get('rankMax'));
             $where .= ($where ? ' AND ' : '') . 'rank <= :rankMax';
+        }
+        if ($request->get('status-not-v')) {
+            $where .= ($where ? ' AND ' : '') . 'v = 0';
         }
         if ($request->get('status')) {
             foreach ($request->get('status') as $key => $val) {

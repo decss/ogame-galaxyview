@@ -27,6 +27,7 @@ class UiPlayerController extends UiMainController
         $players = Player::searchByRequest($request);
         if ($players) {
             $players->load('alliance');
+            $players->load('items');
         }
         return view('players', [
             'players' => $players

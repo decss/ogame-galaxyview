@@ -26,6 +26,30 @@ class SystemItem extends Model
     {
         return UiGalaxyController::getUpdateDate($this->updated);
     }
+
+    public function getCoordsAttribute()
+    {
+        $coords = "{$this->gal}:{$this->sys}:{$this->pos}";
+        return $coords;
+    }
+
+    public static function getUpdateDate($date)
+    {
+        $diff = time() - strtotime($date);
+        foreach (self::$dates as $time => $array) {
+            if ($diff <= $time) {
+                return $array;
+            }
+        }
+
+        return self::$dates[0];
+    }
+
+    public function getUpdateColor()
+    {
+        $date = UiGalaxyController::getUpdateDate($this->updated);
+        return $date['color'];
+    }
 }
 
 

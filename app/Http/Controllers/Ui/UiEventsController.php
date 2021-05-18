@@ -64,7 +64,7 @@ class UiEventsController extends UiMainController
         $events->load('player');
         foreach ($rows as $row) {
             if ($row->type == 70) {
-                $json = json_decode($row->json);
+                $json = json_decode($row->json, true);
                 if ($json['old']) {
                     $ids['ally'][] = $json['old'];
                 }

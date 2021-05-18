@@ -19,6 +19,10 @@
             padding: .3rem .4rem;
         }
 
+        .smaller {
+            font-size:.7em;
+        }
+
         .color1, .color1 a {color: #a0faa0;}
         .color2, .color2 a {color: #70c070;}
         .color3, .color3 a {color: #327832;}
