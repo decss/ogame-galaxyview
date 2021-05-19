@@ -164,12 +164,12 @@
 
                                             @elseif($row['type'] == 70)
                                                 @if(!$row['json']['new'] && $row['json']['old'])
-                                                    Player <u>left</u> alliance <span>
-                                                        {{ isset($alliance[$row['json']['old']]) ? $alliance[$row['json']['old']]->name : "- - -"}}
+                                                    Player <u>left</u> alliance <span class="text-warning">
+                                                        {{ isset($alliances[$row['json']['old']]) ? $alliances[$row['json']['old']]->name : "-"}}
                                                     </span>
                                                 @else
-                                                    Player <u>joined</u> alliance <span>
-                                                        {{ isset($alliance[$row['json']['new']]) ? $alliance[$row['json']['new']]->name : "- - -"}}
+                                                    Player <u>joined</u> alliance <span class="text-warning">
+                                                        {{ isset($alliances[$row['json']['new']]) ? $alliances[$row['json']['new']]->name : "-"}}
                                                     </span>
                                                 @endif
                                             @endif
