@@ -360,6 +360,7 @@ class ApiUtils
         $ids = [];
         $changes = [];
         $dbPlanets = [];
+        $dfThreshold = 100000;
         foreach ($array['items'] as $pos => $item) {
             $ids[] = $pos;
         }
@@ -395,9 +396,8 @@ class ApiUtils
             // threshold: $arrField > 10 k
             $arrField = $item['debris'] ? ($item['debris']['metal'] + $item['debris']['crystal']) : 0;
             $dbField = isset($dbPlanets[$pos]) ? intval($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry) : 0;
-            $dfThrashold = 50000;
             // 30 new field
-            if ($arrField && !$dbField && $arrField >= $dfThrashold) {
+            if ($arrField && !$dbField && $arrField >= $dfThreshold) {
                 $changes[$pos][30] = [
                     'field' => $arrField,
                     'field_me' => $item['debris']['metal'],
@@ -407,7 +407,7 @@ class ApiUtils
                 // 33 decreased field
             } elseif (
                 (($arrField > $dbField && $dbField > 0) || ($arrField > 0 && $arrField < $dbField))
-                && ($arrField >= $dfThrashold || $dbField >= $dfThrashold)
+                && ($arrField >= $dfThreshold || $dbField >= $dfThreshold)
             ) {
                 $act = ($arrField > $dbField) ? 32 : 33;
                 $changes[$pos][$act] = [
@@ -440,7 +440,8 @@ class ApiUtils
                 ];
             }
             // 31 removed field
-            if (($dbPlanets[$pos]->field_me || $dbPlanets[$pos]->field_cry) && !$item['debris']) {
+            $dbField = isset($dbPlanets[$pos]) ? intval($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry) : 0;
+            if ($dbField && !$item['debris'] && $dbField >= $dfThreshold) {
                 $changes[$pos][31] = [
                     'field' => ($dbPlanets[$pos]->field_me + $dbPlanets[$pos]->field_cry),
                     'field_me' => $dbPlanets[$pos]->field_me,
