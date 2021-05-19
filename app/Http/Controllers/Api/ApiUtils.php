@@ -23,10 +23,13 @@ class ApiUtils
         $table = substr_replace($table, null, 0, stripos($table, '<tbody>') + 7);
         $table = substr_replace($table, null, stripos($table, '</tbody>'), strlen($table));
 
+
+        $parse = self::parseGalaxyItems($table);
         $result = [
             'galaxy' => $galaxy,
             'system' => $system,
-            'items' => self::parseGalaxyItems($table),
+            'items' => $parse['items'],
+            'ignored' => $parse['self'],
         ];
 
         return $result;
@@ -35,6 +38,7 @@ class ApiUtils
     public static function parseGalaxyItems($table)
     {
         $items = [];
+        $self = [];
         $rows = explode('</tr>', $table);
         foreach ($rows as $row) {
             $pos = self::parsePos($row);
@@ -50,11 +54,13 @@ class ApiUtils
                     'debris' => self::parseDebris($row),
                     'player' => self::parsePlayer($row),
                 ];
+            } elseif (self::checkSelf($row)) {
+                $self[] = $pos;
             }
 
         }
 
-        return $items;
+        return ['items' => $items, 'self' => $self];
     }
 
     public static function updateSystem($array)
@@ -181,7 +187,8 @@ class ApiUtils
                 ':gal' => $array['galaxy'],
                 ':sys' => $array['system'],
             ];
-            $delQuery = "DELETE FROM ovg_systems WHERE gal = :gal AND sys = :sys";
+            $delQuery = "DELETE FROM ovg_systems WHERE gal = :gal AND sys = :sys"
+                . ($array['ignored'] ? " AND pos NOT IN (" . implode(',', $array['ignored']) . ")" : "");
             DB::delete($delQuery, $delParams);
 
             // Write new system entities
@@ -475,6 +482,18 @@ class ApiUtils
         }
 
         return true;
+    }
+
+    public static function checkSelf($row)
+    {
+        $cols = explode("</td>", $row);
+
+        if (!stristr($cols[0], 'empty_filter')
+            && stristr($cols[5], 'status_abbr_active')
+            && !stristr($cols[5], 'data-playerid=')) {
+            return true;
+        }
+        return false;
     }
 
     public static function parseVal($pattern, $text, $index = 1)

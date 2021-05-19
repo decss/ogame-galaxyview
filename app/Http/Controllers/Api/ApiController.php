@@ -10,6 +10,21 @@ use Illuminate\Support\Facades\Log;
 
 class ApiController extends ApiManiController
 {
+    public function test(Request $request)
+    {
+        $path = storage_path() . '/logs/lumen.log';
+        $file = file_get_contents($path);
+        if ($file) {
+            $logs = explode('local.INFO:', $file);
+            $data = $logs[count($logs) - 1];
+
+            $array = ApiUtils::parseGalaxy($data);
+            dd($array);
+            // $result['events'] = ApiUtils::updateEvents($array);
+            // $result['system'] = ApiUtils::updateSystem($array);
+        }
+    }
+
     public function updateSystem(Request $request)
     {
         $postData = urldecode($request->get('data'));

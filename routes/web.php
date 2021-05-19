@@ -51,5 +51,6 @@ $router->group(['prefix' => 'ui', 'namespace' => '\\'], function () use ($router
 });
 
 $router->group(['prefix' => '/api', 'namespace' => '\\'], function () use ($router) {
+    $router->get('test', ApiController::class . '@test');
     $router->post('updateSystem', ApiController::class . '@updateSystem');
 });

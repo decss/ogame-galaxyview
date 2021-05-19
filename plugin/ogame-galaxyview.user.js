@@ -96,7 +96,7 @@
             url: API_URL + '/' + action,
             data: 'data=' + encodeURIComponent(data),
             headers: {"Content-Type": "application/x-www-form-urlencoded"},
-            timeout: 1000,
+            timeout: 1500,
             onload: function(response) {
                 if (response) {
                     let resp = jQuery.parseJSON(response.responseText.trim());
