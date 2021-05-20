@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        OGame GalaxView
-// @namespace   decss_ogame_galaxyview
+// @namespace   https://github.com/decss
 // @description OGame GalaxView - Galaxytool analog
 // @author      decss
 // @version     0.2
