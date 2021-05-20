@@ -60,14 +60,20 @@
                     labels: [{!! $activity['labels'] !!}],
                     datasets: [
                         {
-                            label: 'Moon',
-                            data: {!! json_encode($activity['data'][2]) !!},
-                            backgroundColor: 'rgb(255, 99, 132)',
+                            label: 'Esp.action',
+                            data: [],
+                            backgroundColor: '#ff9600',
                         },
                         {
                             label: 'Planet',
                             data: {!! json_encode($activity['data'][1]) !!},
-                            backgroundColor: 'rgb(54, 162, 235)',
+                            backgroundColor: '#495057',
+                        },
+                        {
+                            label: 'Moon',
+                            data: {!! json_encode($activity['data'][2]) !!},
+                            // backgroundColor: '#adb5bd',
+                            backgroundColor: '#6c757d',
                         }
                     ]
                 };
@@ -82,6 +88,7 @@
                             },
                             y: {
                                 stacked: true,
+                                grace: '5%',
                                 ticks: {
                                     stepSize: 1
                                 }
