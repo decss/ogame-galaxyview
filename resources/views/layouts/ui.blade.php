@@ -66,10 +66,11 @@
                             <a class="nav-link {{ request()->url() == route('events') ? 'active' : '' }}"
                                href="{{ route('events') }}">Events</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->is('*/adm*') ? 'active' : '' }}"
+                               href="{{ route('adm') }}">Administrative</a>
+                        </li>
                     </ul>
-                    {{--<form>
-                        <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-                    </form>--}}
                 </div>
             </div>
         </nav>

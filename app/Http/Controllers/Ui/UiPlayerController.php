@@ -16,9 +16,14 @@ class UiPlayerController extends UiMainController
         $items = SystemItem::where(['player_id' => $id])->get();
         $items->load('player.alliance');
 
+
+        // Player Activity chart data
+        $activity = $this->getChartActivityData($player);
+
         return view('player', [
             'player' => $player,
             'items' => $items,
+            'activity' => $activity,
         ]);
     }
 
@@ -32,5 +37,37 @@ class UiPlayerController extends UiMainController
         return view('players', [
             'players' => $players
         ]);
+    }
+
+    private function getChartActivityData(Player $player)
+    {
+        $activityLabels = '';
+        foreach (UiUtils::getActivityTimeline() as $time) {
+            $activityLabels .= ($activityLabels ? ', ' : '') . "'{$time}'";
+        }
+
+        $activity = [];
+        foreach ($player->activity as $item) {
+            $time = mb_substr($item->time, 0, 5);
+            if (!isset($activity[$item->type][$time])) {
+                $activity[$item->type][$time] = 1;
+            } else {
+                $activity[$item->type][$time]++;
+            }
+        }
+        $activityData = [1 => [], 2 => []];
+        foreach ($activity as $type => $times) {
+            foreach ($times as $time => $count) {
+                $activityData[$type][] = [
+                    'x' => $time,
+                    'y' => $count,
+                ];
+            }
+        }
+
+        return [
+            'labels' => $activityLabels,
+            'data' => $activityData,
+        ];
     }
 }

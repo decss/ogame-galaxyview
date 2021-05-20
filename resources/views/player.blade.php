@@ -3,7 +3,7 @@
 @section('main')
 
     <div class="row">
-        <div class="col-sm-6 col-md-4">
+        <div class="col-12 col-md-6 col-lg-4">
             <h4>Player Info</h4>
             <table class="table table-dark table-bordered">
                 <tr>
@@ -48,8 +48,53 @@
                 @endforeach
             </table>
 
+        </div>
+        <div class="col-12 col-md-6 col-lg-8">
             <h4 class="text-start">Activity</h4>
-            // TODO: Add activity chart
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <div>
+                <canvas id="activityChart" style="max-height: auto;"></canvas>
+            </div>
+            <script>
+                const data = {
+                    labels: [{!! $activity['labels'] !!}],
+                    datasets: [
+                        {
+                            label: 'Moon',
+                            data: {!! json_encode($activity['data'][2]) !!},
+                            backgroundColor: 'rgb(255, 99, 132)',
+                        },
+                        {
+                            label: 'Planet',
+                            data: {!! json_encode($activity['data'][1]) !!},
+                            backgroundColor: 'rgb(54, 162, 235)',
+                        }
+                    ]
+                };
+                const config = {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                stacked: true,
+                            },
+                            y: {
+                                stacked: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                };
+
+                var activityChart = new Chart(
+                    document.getElementById('activityChart'),
+                    config
+                );
+            </script>
         </div>
     </div>
 

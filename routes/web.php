@@ -14,6 +14,7 @@
 */
 
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Ui\UiAdmController;
 use App\Http\Controllers\Ui\UiAllianceController;
 use App\Http\Controllers\Ui\UiEventsController;
 use App\Http\Controllers\Ui\UiController;
@@ -48,6 +49,9 @@ $router->group(['prefix' => 'ui', 'namespace' => '\\'], function () use ($router
     // Events
     $router->get('events', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
     $router->post('events', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
+
+    // Administrative
+    $router->get('adm', ['as' => 'adm', 'uses' => UiAdmController::class . '@index']);
 });
 
 $router->group(['prefix' => '/api', 'namespace' => '\\'], function () use ($router) {

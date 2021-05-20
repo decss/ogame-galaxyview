@@ -17,6 +17,11 @@ class Player extends Model
         return $this->hasMany(SystemItem::class);
     }
 
+    public function activity()
+    {
+        return $this->hasMany(Activity::class);
+    }
+
     public function alliance()
     {
         return $this->belongsTo(Alliance::class, 'ally_id');

@@ -49,9 +49,13 @@
                     @foreach($systemEvents as $event)
                             <tr>
                                 <td>{{ $event['date'] }}</td>
-                                <td>{!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a></td>
+                                <td>
+                                    @if(isset($event['player']))
+                                        {!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a></td>
+                                    @endif
                                 <td>
                                     <a href="{{ route('galaxy.view', ['gal' => $event['gal'], 'sys' => $event['sys'], 'p' => $event['pos']]) }}">{{ $event['coords'] }}</a>
+                                    [<a href="https://s175-en.ogame.gameforge.com/game/index.php?page=ingame&component=galaxy&galaxy={{ $event['gal'] }}&system={{ $event['sys'] }}&position={{ $event['pos'] }}" target="_blank" rel="noreferrer">game</a>]
                                 </td>
                                 <td>
                                     @foreach($event['rows'] as $row)
@@ -131,7 +135,11 @@
                         @foreach($events as $playerId => $event)
                             <tr>
                                 <td>{{ $event['date'] }}</td>
-                                <td>{!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a></td>
+                                <td>
+                                    @if(isset($event['player']))
+                                        {!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a>
+                                    @endif
+                                </td>
                                 <td>
                                     @foreach($event['rows'] as $row)
                                         <div>
