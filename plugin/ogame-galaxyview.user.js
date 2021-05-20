@@ -34,7 +34,7 @@
 
         if (page == 'galaxy') {
 
-            if ($('#mobileDiv').attr('viewed') != 'yes') {
+            if ($('#mobileDiv').length > 0 && $('#mobileDiv').attr('viewed') != 'yes') {
                 $('#mobileDiv').attr('viewed', 'yes');
                 isChange = true;
             }
@@ -49,7 +49,7 @@
             }
 
         } else if (page == 'messages') {
-            if ($('#fleetsgenericpage').attr('viewed') != 'yes') {
+            if ($('#fleetsgenericpage').length > 0 && $('#fleetsgenericpage').attr('viewed') != 'yes') {
                 $('#fleetsgenericpage').attr('viewed', 'yes');
                 isChange = true;
             }
