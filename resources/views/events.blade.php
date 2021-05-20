@@ -51,11 +51,16 @@
                                 <td>{{ $event['date'] }}</td>
                                 <td>
                                     @if(isset($event['player']))
-                                        {!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a></td>
+                                        {!! $event['player']->name !!}
+                                        <i class="small text-secondary">
+                                            ({{ $event['player']->rank }})
+                                            <a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a>
+                                        </i>
                                     @endif
+                                </td>
                                 <td>
                                     <a href="{{ route('galaxy.view', ['gal' => $event['gal'], 'sys' => $event['sys'], 'p' => $event['pos']]) }}">{{ $event['coords'] }}</a>
-                                    [<a href="https://s175-en.ogame.gameforge.com/game/index.php?page=ingame&component=galaxy&galaxy={{ $event['gal'] }}&system={{ $event['sys'] }}&position={{ $event['pos'] }}" target="_blank" rel="noreferrer">game</a>]
+                                    <i class="small"><a href="https://s175-en.ogame.gameforge.com/game/index.php?page=ingame&component=galaxy&galaxy={{ $event['gal'] }}&system={{ $event['sys'] }}&position={{ $event['pos'] }}" target="_blank" rel="noreferrer">show</a></i>
                                 </td>
                                 <td>
                                     @foreach($event['rows'] as $row)
@@ -137,7 +142,11 @@
                                 <td>{{ $event['date'] }}</td>
                                 <td>
                                     @if(isset($event['player']))
-                                        {!! $event['player']->name !!} &nbsp;<a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a>
+                                        {!! $event['player']->name !!}
+                                        <i class="small text-secondary">
+                                            ({{ $event['player']->rank }})
+                                            <a href="{{ route('player', ['id' => $event['player']->id]) }}">link</a>
+                                        </i>
                                     @endif
                                 </td>
                                 <td>
