@@ -55,7 +55,7 @@ class UiPlayerController extends UiMainController
                 $activity[$item->type][$time]++;
             }
         }
-        $activityData = [1 => [], 2 => []];
+        $activityData = [1 => [], 2 => [], 3 => []];
         foreach ($activity as $type => $times) {
             foreach ($times as $time => $count) {
                 $activityData[$type][] = [
