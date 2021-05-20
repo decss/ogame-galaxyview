@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name        OGame GalaxView
-// @namespace   https://github.com/decss
+// @namespace   decss_ogame_galaxyview
 // @description OGame GalaxView - Galaxytool analog
 // @author      decss
 // @version     0.2
 // @homepage    https://github.com/decss/ogame-galaxyview
 // @updateURL   https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
+// @downloadURL https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
 // @include     *ogame.gameforge.com/game/*
 // @grant       GM_xmlhttpRequest
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js

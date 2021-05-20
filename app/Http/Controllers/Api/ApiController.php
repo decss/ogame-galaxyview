@@ -61,11 +61,6 @@ class ApiController extends ApiManiController
             return $this->getResp();
         }
 
-        // Log::channel('single')->info(
-        //    "\r\n------------------------------------------------------------------------------\r\n"
-        //    . urldecode($postData)
-        // );
-
         $array = ApiUtils::parseMessages($postData);
         $result['espActivity'] = ApiUtils::updateEspEvents($array['esp']);
 
@@ -74,7 +69,7 @@ class ApiController extends ApiManiController
         $this->setRespMessage("Messages was readed");
         $this->setRespData(
             json_encode($result, JSON_PRETTY_PRINT) . "\r\n------------------\r\n"
-            . json_encode($array, JSON_PRETTY_PRINT)
+            . json_encode($array['esp'], JSON_PRETTY_PRINT)
         );
 
         return $this->getResp();

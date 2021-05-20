@@ -812,7 +812,7 @@ class ApiUtils
         // $dateFmt = date("Y-m-d H:i:s", strtotime($date));
 
         $result = [
-            'msgId' => self::parseVal('data-msg-id="([0-9]+)"', $row),
+            // 'msgId' => self::parseVal('data-msg-id="([0-9]+)"', $row),
             'coords' => $coords,
             'player' => trim($playerName),
             'playerId' => self::parseVal('data-playerId=&quot;([0-9]+)&quot;', $row),
