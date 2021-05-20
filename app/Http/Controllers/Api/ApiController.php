@@ -33,10 +33,10 @@ class ApiController extends ApiManiController
             return $this->getResp();
         }
 
-         // Log::channel('single')->info(
-         //    "\r\n------------------------------------------------------------------------------\r\n"
-         //    . urldecode($postData)
-         // );
+        // Log::channel('single')->info(
+        //    "\r\n------------------------------------------------------------------------------\r\n"
+        //    . urldecode($postData)
+        // );
 
         $array = ApiUtils::parseGalaxy($postData);
         $result['events'] = ApiUtils::updateEvents($array);
@@ -53,5 +53,31 @@ class ApiController extends ApiManiController
         return $this->getResp();
     }
 
+    public function updateMessages(Request $request)
+    {
+        $postData = urldecode($request->get('data'));
+        if (!$postData) {
+            $this->setResp('error', 'Input data has wrong format or empty');
+            return $this->getResp();
+        }
+
+        // Log::channel('single')->info(
+        //    "\r\n------------------------------------------------------------------------------\r\n"
+        //    . urldecode($postData)
+        // );
+
+        $array = ApiUtils::parseMessages($postData);
+        $result['espActivity'] = ApiUtils::updateEspEvents($array['esp']);
+
+        $this->setRespStatus("success");
+
+        $this->setRespMessage("Messages was readed");
+        $this->setRespData(
+            json_encode($result, JSON_PRETTY_PRINT) . "\r\n------------------\r\n"
+            . json_encode($array, JSON_PRETTY_PRINT)
+        );
+
+        return $this->getResp();
+    }
 
 }

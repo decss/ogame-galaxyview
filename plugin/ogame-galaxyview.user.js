@@ -3,7 +3,7 @@
 // @namespace   decss_ogame_galaxyview
 // @description OGame GalaxView - Galaxytool analog
 // @author      decss
-// @version     0.1
+// @version     0.2
 // @homepage    https://github.com/decss/ogame-galaxyview
 // @updateURL   https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
 // @include     *ogame.gameforge.com/game/*
@@ -29,10 +29,10 @@
         console.log('refresh ...');
 
         let page = getPage();
+        let isChange = false;
         updateWidgetPage(page);
 
         if (page == 'galaxy') {
-            let isChange = false;
 
             if ($('#mobileDiv').attr('viewed') != 'yes') {
                 $('#mobileDiv').attr('viewed', 'yes');
@@ -46,6 +46,17 @@
 
             if ($('input[name=autoscan]').is(':checked')) {
                 autoscanGalaxy();
+            }
+
+        } else if (page == 'messages') {
+            if ($('#fleetsgenericpage').attr('viewed') != 'yes') {
+                $('#fleetsgenericpage').attr('viewed', 'yes');
+                isChange = true;
+            }
+
+            if (isChange) {
+                console.log('... calling updateSystem request');
+                await doRequest('updateMessages', $('#fleetsgenericpage').html());
             }
         }
 
@@ -66,8 +77,10 @@
     }
 
     function getPage(page) {
-        if (location.search.indexOf('galaxy') != -1) {
+        if (location.search.indexOf('component=galaxy') != -1) {
             return 'galaxy';
+        } else if (location.search.indexOf('page=messages') != -1) {
+            return 'messages';
         }
         return '';
     }

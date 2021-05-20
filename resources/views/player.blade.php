@@ -61,7 +61,7 @@
                     datasets: [
                         {
                             label: 'Esp.action',
-                            data: [],
+                            data: {!! json_encode($activity['data'][3]) !!},
                             backgroundColor: '#ff9600',
                         },
                         {

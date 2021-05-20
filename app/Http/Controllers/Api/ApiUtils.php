@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Api;
 
 
+use App\Models\Activity;
 use App\Models\EventPlayer;
 use App\Models\EventSystem;
 use App\Models\SystemDate;
@@ -280,6 +281,31 @@ class ApiUtils
         }
 
         return $result;
+    }
+
+    public static function updateEspEvents($events)
+    {
+        $count = 0;
+        $models = [];
+        foreach ($events as $event) {
+            $minutes = floor((time() - strtotime($event['date'])) / 60);
+            $activity = self::getActivityTime($minutes);
+            $models[] = [
+                'player_id' => (int)$event['playerId'],
+                'coords' => (string)$event['coords'],
+                'type' => 3,
+                'date' => $activity['date'],
+                'time' => $activity['time'],
+                'value' => $minutes,
+            ];
+            $count++;
+        }
+
+        if ($models) {
+            Activity::insertOrIgnore($models);
+        }
+
+        return $count;
     }
 
     private static function getPlayerEvents(array $array)
@@ -727,4 +753,73 @@ class ApiUtils
         ];
     }
 
+
+
+    /** Messages */
+    public static function parseMessages($text)
+    {
+        $text = substr_replace($text, null, 0, stripos($text, '</ul>') + 5);
+        $text = substr_replace($text, null, stripos($text, '<ul '));
+        $text = trim($text);
+
+        $parse = self::parseMessagesItems($text);
+
+        return $parse;
+
+    }
+
+    private static function parseMessagesItems(string $text)
+    {
+        $result = [
+            'esp' => [],
+        ];
+        $array = explode('</li>', $text);
+
+        foreach ($array as $i => $row) {
+            if (!trim($row)) {
+                continue;
+            }
+
+            $type = self::getMessageType($row);
+            // Espionage actions
+            if ($type == 'esp') {
+                $result[$type][] = self::getMessageEsp($row);;
+            }
+        }
+
+        return $result;
+    }
+
+    private static function getMessageType(string $row)
+    {
+        if (stristr($row, 'Espionage action on')) {
+            return 'esp';
+        }
+
+        return null;
+    }
+
+    private static function getMessageEsp(string $row)
+    {
+        $col1 = substr_replace($row, null, 0, strpos($row, 'A foreign fleet from'));
+        $col1 = substr_replace($col1, null, strpos($col1, '</a>'));
+
+        $coords = self::parseVal('\[([0-9:]+)\]', $col1);
+        $playerName = substr_replace($row, null, 0, strpos($row, 'Player:') + 7);
+        $playerName = substr_replace($playerName, null, strpos($playerName, '|'));
+
+        $date = self::parseVal('msg_date fright">([0-9\s\.:]+)</span>', $row);
+        // $dateFmt = date("Y-m-d H:i:s", strtotime($date));
+
+        $result = [
+            'msgId' => self::parseVal('data-msg-id="([0-9]+)"', $row),
+            'coords' => $coords,
+            'player' => trim($playerName),
+            'playerId' => self::parseVal('data-playerId=&quot;([0-9]+)&quot;', $row),
+            'date' => $date,
+            // 'datetimeFmt' => $dateFmt,
+        ];
+
+        return $result;
+    }
 }

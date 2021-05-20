@@ -102,7 +102,7 @@ class Player extends Model
             $where .= ($where ? ' AND ' : '') . " ({$whereStatus})";
         }
         if ($where) {
-            $users = DB::select("SELECT * FROM ogv_players WHERE {$where}", $params);
+            $users = DB::select("SELECT * FROM ogv_players WHERE {$where} ORDER BY rank", $params);
             return self::hydrate($users);
         }
 
