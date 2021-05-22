@@ -288,15 +288,15 @@ class ApiUtils
         $count = 0;
         $models = [];
         foreach ($events as $event) {
-            $minutes = floor((time() - strtotime($event['date'])) / 60);
-            $activity = self::getActivityTime($minutes);
+            $eventTime = strtotime($event['date']) + 3600 * 2; // Timezine fix
+            $activity = self::getActivityTime(0, $eventTime);
             $models[] = [
                 'player_id' => (int)$event['playerId'],
                 'coords' => (string)$event['coords'],
                 'type' => 3,
                 'date' => $activity['date'],
                 'time' => $activity['time'],
-                'value' => $minutes,
+                'value' => $event['date'],
             ];
             $count++;
         }
@@ -547,14 +547,11 @@ class ApiUtils
     public static function getActivityTime($activity, $now = null)
     {
         $now = $now ? $now : time();
-        // $now    = ceil($now / 600) * 600;
 
-        if ($activity == '*') {
+        if ($activity === '*') {
             $ts = $now - 5 * 60;
-        } elseif (intval($activity) > 0) {
-            $ts = $now - $activity * 60;
         } else {
-            return null;
+            $ts = $now - intval($activity) * 60;
         }
 
         $minute = date('i', $ts);

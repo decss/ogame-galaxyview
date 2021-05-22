@@ -1,14 +1,15 @@
 // ==UserScript==
 // @name        OGame GalaxView
-// @namespace   decss_ogame_galaxyview
+// @namespace   https://github.com/decss
 // @description OGame GalaxView - Galaxytool analog
 // @author      decss
-// @version     0.2
+// @version     0.2.1
 // @homepage    https://github.com/decss/ogame-galaxyview
 // @updateURL   https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
 // @downloadURL https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
 // @include     *ogame.gameforge.com/game/*
 // @grant       GM_xmlhttpRequest
+// @run-at      document-idle
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @license MIT
 // ==/UserScript==
@@ -18,29 +19,22 @@
     'use strict';
 
     const REFRESH = 200;
-    // const API_URL = 'http://ogame.local/api';
-    const API_URL = 'https://dev.soft-szn.ru/ogame/api';
-
+    const API_URL = {
+        'dev': 'http://ogame.local/api',
+        'prod': 'https://dev.soft-szn.ru/ogame/api'
+    };
     var turn = 0;
 
     // Main thread
     drawWidget();
-
     let timerId = setInterval(async function() {
         console.log('refresh ...');
 
         let page = getPage();
-        let isChange = false;
         updateWidgetPage(page);
 
         if (page == 'galaxy') {
-
-            if ($('#mobileDiv').length > 0 && $('#mobileDiv').attr('viewed') != 'yes') {
-                $('#mobileDiv').attr('viewed', 'yes');
-                isChange = true;
-            }
-
-            if (isChange) {
+            if (checkChange('#mobileDiv')) {
                 console.log('... calling updateSystem request');
                 await doRequest('updateSystem', $('#galaxycomponent').html());
             }
@@ -50,13 +44,8 @@
             }
 
         } else if (page == 'messages') {
-            if ($('#fleetsgenericpage').length > 0 && $('#fleetsgenericpage').attr('viewed') != 'yes') {
-                $('#fleetsgenericpage').attr('viewed', 'yes');
-                isChange = true;
-            }
-
-            if (isChange) {
-                console.log('... calling updateSystem request');
+            if (checkChange('#fleetsgenericpage')) {
+                console.log('... calling updateMessages request');
                 await doRequest('updateMessages', $('#fleetsgenericpage').html());
             }
         }
@@ -65,7 +54,27 @@
     }, REFRESH);
 
 
+    // Listeners
+    $('input[name=dev]').on('click', function () {
+        if ($(this).is(':checked')) {
+            localStorage.setItem('ovg_dev', 'true');
+            $(this).parent().attr('style', 'color:red; font-weight:bold');
+        } else {
+            localStorage.setItem('ovg_dev', 'false');
+            $(this).parent().attr('style', '');
+        }
+    });
+
+
     // Functions
+    function checkChange(el) {
+        if (el && $(el).length > 0 && $(el).attr('viewed') != 'yes') {
+            $(el).attr('viewed', 'yes');
+            return true;
+        }
+        return false;
+    }
+
     function autoscanGalaxy() {
         if (turn % 10 == 0) {
             let $gal = $('#galaxy_input').val();
@@ -99,15 +108,13 @@
         updateWidget('page', text, cls)
     }
 
-
-
     async function doRequest(action, data) {
         console.log('doRequest() start');
         updateWidget('status', 'Sending data ...');
 
         GM_xmlhttpRequest({
             method: "POST",
-            url: API_URL + '/' + action,
+            url: getApiUrl() + '/' + action,
             data: 'data=' + encodeURIComponent(data),
             headers: {"Content-Type": "application/x-www-form-urlencoded"},
             timeout: 1500,
@@ -120,7 +127,6 @@
                         return true;
                     }
                 }
-
                 updateWidget('status', 'Response has errors', 'error');
             },
             onabort: function() {updateWidget('status', 'Request Aborted', 'error');},
@@ -130,9 +136,18 @@
         console.log('doRequest() end');
     }
 
+    function getApiUrl() {
+        if (localStorage.getItem('ovg_dev') === 'true') {
+            return API_URL.dev;
+        } else {
+            return API_URL.prod;
+        }
+    }
+
     function drawWidget() {
+        let devChecked = localStorage.getItem('ovg_dev') === 'true' ? 'checked' : '';
         let html = `<style type="text/css">
-            .ogv-widget {width:280px; max-height:90%; overflow-y:scroll; position:fixed; left:10px; top:30px; border:1px solid #333; padding:2px 5px; font-size:10px; line-height:16px; background:#000; color:#333;}
+            .ogv-widget {z-index:1; width:250px; max-height:90%; overflow-y:scroll; position:fixed; left:10px; top:30px; border:1px solid #333; padding:2px 5px; font-size:10px; line-height:16px; background:#000; color:#333;}
             .ogv-controls {font-size:12px; margin:4px 0 2px 0; color:#7F7F7F}
             .ogv-controls label {cursor:pointer;}
             .ovg-success {color:#4CFF00;}
@@ -143,6 +158,7 @@
         <div class="ogv-widget">
             <div class="ogv-controls">
                 <label><input type="checkbox" name="autoscan"> Autoscan</label>
+                <label ${devChecked ? 'style="color:red; font-weight:bold"' : ''}><input type="checkbox" name="dev" ${devChecked}> Dev mode</label>
             </div>
             <div class="ogv-foot">
                 <div class="ogv-page">Page: <span>-</span></div>

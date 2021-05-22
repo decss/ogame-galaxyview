@@ -12,6 +12,18 @@ class ApiController extends ApiManiController
 {
     public function test(Request $request)
     {
+        $eventTime = strtotime('22.05.2021 02:29:40');
+        $minutes = floor((time() - $eventTime) / 60);
+        $time00 = ApiUtils::getActivityTime($minutes);
+        $time01 = ApiUtils::getActivityTime(0, $eventTime);
+        $time1 = ApiUtils::getActivityTime($minutes, strtotime(date("Y-m-d H:i:20")));
+        $time2 = ApiUtils::getActivityTime($minutes, strtotime(date("Y-m-d H:i:30")));
+        dd(
+            date('Y-m-d H:i:s'),
+            $minutes,
+            $time00, $time01, $time1, $time2
+        );
+
         $path = storage_path() . '/logs/lumen.log';
         $file = file_get_contents($path);
         if ($file) {
@@ -60,6 +72,11 @@ class ApiController extends ApiManiController
             $this->setResp('error', 'Input data has wrong format or empty');
             return $this->getResp();
         }
+
+         Log::channel('single')->info(
+            "\r\n------------------------------------------------------------------------------\r\n"
+            . urldecode($postData)
+         );
 
         $array = ApiUtils::parseMessages($postData);
         $result['espActivity'] = ApiUtils::updateEspEvents($array['esp']);
