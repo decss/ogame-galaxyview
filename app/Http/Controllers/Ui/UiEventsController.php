@@ -13,8 +13,11 @@ use Illuminate\Support\Facades\DB;
 
 class UiEventsController extends UiMainController
 {
-    public function index(Request $request = null)
+    public function index(Request $request = null, $period = null)
     {
+        $period = $period ? $period : 'today';
+
+
         $dateFormat = 'Y-m-d';
         $filters = $this->getFilters($request);
         setcookie('filters', json_encode($filters), time() + 3600 * 60 * 30);
@@ -26,6 +29,7 @@ class UiEventsController extends UiMainController
         if ($filters['systemTh']) {
             $where .= ($where ? " AND " : "") . "(threshold >= " . $filters['systemTh'] . " OR threshold = 0)";
         }
+        $where .= ($where ? " AND " : "") . self::getPeriodWhere($period);
         $systemEvents = [];
         $rows = DB::select("SELECT * FROM ovg_systems_log " . ($where ? "WHERE " . $where : "") . " ORDER BY created DESC, player_id");
         $events = EventSystem::hydrate($rows);
@@ -56,6 +60,7 @@ class UiEventsController extends UiMainController
         if ($filters['playerTypes']) {
             $where .= ($where ? " AND " : "") . "type IN (" . implode(',', $filters['playerTypes']) . ")";
         }
+        $where .= ($where ? " AND " : "") . self::getPeriodWhere($period);
         $playerEvents = [];
         $ids = [];
         $alliances = [];
@@ -95,11 +100,32 @@ class UiEventsController extends UiMainController
         }
 
         return view('events', [
+            'period' => $period,
             'systemEvents' => $systemEvents,
             'playerEvents' => $playerEvents,
             'alliances' => $alliances,
             'filters' => $filters,
         ]);
+    }
+
+    private static function getPeriodWhere($period)
+    {
+        $where = null;
+        if ($period == 'yesterday') {
+            $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-1 days"))
+                . "' AND created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
+        } elseif ($period == '7-days') {
+            $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-7 days"))
+                . "' AND created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
+        } elseif ($period == '30-days') {
+            $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-30 days"))
+                . "' AND created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
+        } else {
+            $where = "created >= '" . date("Y-m-d 00:00:00")
+                . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";
+        }
+
+        return $where;
     }
 
     private function getFilters(Request $request = null)

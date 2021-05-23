@@ -47,8 +47,8 @@ $router->group(['prefix' => 'ui', 'namespace' => '\\'], function () use ($router
     $router->get('alliance/{id}', ['as' => 'alliance', 'uses' => UiAllianceController::class . '@index']);
 
     // Events
-    $router->get('events', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
-    $router->post('events', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
+    $router->get('events[/{period}]', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
+    $router->post('events[/{period}]', ['as' => 'events', 'uses' => UiEventsController::class . '@index']);
 
     // Administrative
     $router->get('adm', ['as' => 'adm', 'uses' => UiAdmController::class . '@index']);

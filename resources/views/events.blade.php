@@ -1,11 +1,24 @@
 @extends('layouts.ui')
 
 @section('main')
-
+    <ul class="pagination justify-content-center1 mb-1 small" style="font-size: 0.75em;">
+        <li class="page-item {{ $period == 'today' ? 'active' : '' }}">
+            <a class="page-link" href="{{ route('events', ['period' => 'today']) }}">Today</a>
+        </li>
+        <li class="page-item {{ $period == 'yesterday' ? 'active' : '' }}">
+            <a class="page-link" href="{{ route('events', ['period' => 'yesterday']) }}">Yesterday</a>
+        </li>
+        <li class="page-item {{ $period == '7-days' ? 'active' : '' }}">
+            <a class="page-link" href="{{ route('events', ['period' => '7-days']) }}">Last 7 days</a>
+        </li>
+        <li class="page-item {{ $period == '30-days' ? 'active' : '' }}">
+            <a class="page-link" href="{{ route('events', ['period' => '30-days']) }}">Last 30 days</a>
+        </li>
+    </ul>
     <div class="row">
         <div class="col-12 col-md-6">
             <h4>System changes</h4>
-            <form class="row small" action="{{ route('events') }}" method="post">
+            <form class="row small" action="{{ route('events', ['period' => $period]) }}" method="post">
                 <div class="col-4">
                     <div class="form-check">
                         <label><input name="system[]" class="form-check-input" type="checkbox" value="10" {{ in_array('10', $filters['system']) ? 'checked' : '' }}>New planet</label>
@@ -94,7 +107,7 @@
 
         <div class="col-12 col-md-6">
             <h4>Player changes</h4>
-            <form class="row small" action="{{ route('events') }}" method="post">
+            <form class="row small" action="{{ route('events', ['period' => $period]) }}" method="post">
                 <div class="col-4">
                     <div class="form-check">
                         <label><input name="player[]" class="form-check-input" type="checkbox" value="40" {{ in_array('40', $filters['player']) ? 'checked' : '' }}>Name changed</label>
