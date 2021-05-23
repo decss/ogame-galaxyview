@@ -63,7 +63,7 @@
                                href="{{ route('galaxy', ['gal' => isset($galaxy) ? $galaxy : '']) }}">Galaxy view</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->url() == route('events') ? 'active' : '' }}"
+                            <a class="nav-link {{ request()->is('*/events*') ? 'active' : '' }}"
                                href="{{ route('events') }}">Events</a>
                         </li>
                         <li class="nav-item">

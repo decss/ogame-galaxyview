@@ -114,12 +114,15 @@ class UiEventsController extends UiMainController
         if ($period == 'yesterday') {
             $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-1 days"))
                 . "' AND created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
+        } elseif ($period == '3-days') {
+            $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-3 days"))
+                . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";
         } elseif ($period == '7-days') {
             $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-7 days"))
-                . "' AND created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
+                . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";
         } elseif ($period == '30-days') {
             $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-30 days"))
-                . "' AND created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
+                . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";
         } else {
             $where = "created >= '" . date("Y-m-d 00:00:00")
                 . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";

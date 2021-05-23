@@ -2,11 +2,17 @@
 
 @section('main')
     <ul class="pagination justify-content-center1 mb-1 small" style="font-size: 0.75em;">
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">Events period:</a>
+        </li>
         <li class="page-item {{ $period == 'today' ? 'active' : '' }}">
             <a class="page-link" href="{{ route('events', ['period' => 'today']) }}">Today</a>
         </li>
         <li class="page-item {{ $period == 'yesterday' ? 'active' : '' }}">
             <a class="page-link" href="{{ route('events', ['period' => 'yesterday']) }}">Yesterday</a>
+        </li>
+        <li class="page-item {{ $period == '3-days' ? 'active' : '' }}">
+            <a class="page-link" href="{{ route('events', ['period' => '3-days']) }}">Last 3 days</a>
         </li>
         <li class="page-item {{ $period == '7-days' ? 'active' : '' }}">
             <a class="page-link" href="{{ route('events', ['period' => '7-days']) }}">Last 7 days</a>
