@@ -20,18 +20,18 @@ class UiEventsController extends UiMainController
 
         $dateFormat = 'Y-m-d';
         $filters = $this->getFilters($request);
-        setcookie('filters', json_encode($filters), time() + 3600 * 60 * 30);
+        setcookie('filters', json_encode($filters), time() + 3600 * 60 * 30, '/');
 
         $where = '';
         if ($filters['systemTypes']) {
-            $where .= ($where ? " AND " : "") . "type IN (" . implode(',', $filters['systemTypes']) . ")";
+            $where .= ($where ? " AND " : "") . "l.type IN (" . implode(',', $filters['systemTypes']) . ")";
         }
         if ($filters['systemTh']) {
-            $where .= ($where ? " AND " : "") . "(threshold >= " . $filters['systemTh'] . " OR threshold = 0)";
+            $where .= ($where ? " AND " : "") . "(l.threshold >= " . $filters['systemTh'] . " OR l.threshold = 0)";
         }
         $where .= ($where ? " AND " : "") . self::getPeriodWhere($period);
         $systemEvents = [];
-        $rows = DB::select("SELECT * FROM ovg_systems_log " . ($where ? "WHERE " . $where : "") . " ORDER BY created DESC, player_id");
+        $rows = DB::select("SELECT l.* FROM ovg_systems_log AS l " . ($where ? " WHERE " . $where : "") . " ORDER BY l.created DESC, l.player_id");
         $events = EventSystem::hydrate($rows);
         $events->load('player');
         foreach ($events as $event) {
@@ -58,13 +58,18 @@ class UiEventsController extends UiMainController
 
         $where = '';
         if ($filters['playerTypes']) {
-            $where .= ($where ? " AND " : "") . "type IN (" . implode(',', $filters['playerTypes']) . ")";
+            $where .= ($where ? " AND " : "") . "l.type IN (" . implode(',', $filters['playerTypes']) . ")";
         }
         $where .= ($where ? " AND " : "") . self::getPeriodWhere($period);
         $playerEvents = [];
         $ids = [];
         $alliances = [];
-        $rows = DB::select("SELECT * FROM ogv_players_log " . ($where ? "WHERE " . $where : "") . " ORDER BY created DESC");
+        $whereVac = null;
+        if (isset($filters['playerNovac']) && $filters['playerNovac'] == true) {
+            $whereVac = "INNER JOIN ogv_players AS p ON p.id = l.player_id";
+            $where .= ($where ? " AND " : "") . "p.v = 0";
+        }
+        $rows = DB::select("SELECT l.* FROM ogv_players_log AS l " . $whereVac . ($where ? " WHERE " . $where : "") . " ORDER BY l.created DESC");
         $events = EventPlayer::hydrate($rows);
         $events->load('player');
         foreach ($rows as $row) {
@@ -112,20 +117,20 @@ class UiEventsController extends UiMainController
     {
         $where = null;
         if ($period == 'yesterday') {
-            $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-1 days"))
-                . "' AND created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
+            $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-1 days"))
+                . "' AND l.created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
         } elseif ($period == '3-days') {
-            $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-3 days"))
-                . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";
+            $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-3 days"))
+                . "' AND l.created <= '" . date("Y-m-d 23:59:59") . "'";
         } elseif ($period == '7-days') {
-            $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-7 days"))
-                . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";
+            $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-7 days"))
+                . "' AND l.created <= '" . date("Y-m-d 23:59:59") . "'";
         } elseif ($period == '30-days') {
-            $where = "created >= '" . date("Y-m-d 00:00:00", strtotime("-30 days"))
-                . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";
+            $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-30 days"))
+                . "' AND l.created <= '" . date("Y-m-d 23:59:59") . "'";
         } else {
-            $where = "created >= '" . date("Y-m-d 00:00:00")
-                . "' AND created <= '" . date("Y-m-d 23:59:59") . "'";
+            $where = "l.created >= '" . date("Y-m-d 00:00:00")
+                . "' AND l.created <= '" . date("Y-m-d 23:59:59") . "'";
         }
 
         return $where;
@@ -139,6 +144,7 @@ class UiEventsController extends UiMainController
             'systemTypes' => [],
             'player' => [],
             'playerTypes' => [],
+            'playerNovac' => false,
         ];
 
         if (isset($_COOKIE['filters'])) {
@@ -153,6 +159,7 @@ class UiEventsController extends UiMainController
                 $filters['systemTh'] = intval($request->get('systemTh'));
             } elseif ($request->has('filterPlayer')) {
                 $filters['player'] = (array)$request->get('player');
+                $filters['playerNovac'] = $request->get('playerNovac') == '1' ? true : false;
             }
 
             $filters['systemTypes'] = $this->getFilterTypes($filters['system']);

@@ -141,7 +141,10 @@
                         <label><input name="player[]" class="form-check-input" type="checkbox" value="44" {{ in_array('44', $filters['player']) ? 'checked' : '' }}>Status <span class="color-i">Inactive</span></label>
                     </div>
                     <div class="form-check">
+                        <label><input name="playerNovac" class="form-check-input" type="checkbox" value="1" {{ isset($filters['playerNovac']) && $filters['playerNovac'] == true ? 'checked' : '' }}>Ignore <span class="color-v">Vac</span> players</label>
+                        <!--
                         <label><input name="player[]" class="form-check-input" type="checkbox" value="45" {{ in_array('45', $filters['player']) ? 'checked' : '' }}>Status <span class="color-hp">Honourable</span></label>
+                        -->
                     </div>
                     <button type="submit" name="filterPlayer" class="btn btn-primary btn-sm">Filter events</button>
                 </div>
