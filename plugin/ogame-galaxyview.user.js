@@ -3,7 +3,7 @@
 // @namespace   https://github.com/decss
 // @description OGame GalaxView - Galaxytool analog
 // @author      decss
-// @version     0.2.1
+// @version     0.2.2
 // @homepage    https://github.com/decss/ogame-galaxyview
 // @updateURL   https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
 // @downloadURL https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
@@ -19,6 +19,7 @@
     'use strict';
 
     const REFRESH = 200;
+    const UNIVERSE = 's175-en';
     const API_URL = {
         'dev': 'http://ogame.local/api',
         'prod': 'https://dev.soft-szn.ru/ogame/api'
@@ -87,6 +88,10 @@
     }
 
     function getPage(page) {
+        if (location.hostname.indexOf(UNIVERSE) == -1) {
+            return '';
+        }
+
         if (location.search.indexOf('component=galaxy') != -1) {
             return 'galaxy';
         } else if (location.search.indexOf('page=messages') != -1) {
