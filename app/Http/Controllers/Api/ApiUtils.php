@@ -129,6 +129,10 @@ class ApiUtils
             // Activity (planet, moon)
             // check $item['planet']['activity'] and $item['moon']['activity']
             foreach ([1 => 'planet', 2 => 'moon'] as $activityType => $object) {
+                // Skip if inactive
+                if (in_array('i', $item['player']['states']) || in_array('I', $item['player']['states'])) {
+                    continue;
+                }
                 $k = $i . '_' . $activityType;
                 if ($item[$object] && $item[$object]['activity']) {
                     $activity = self::getActivityTime($item[$object]['activity']);
