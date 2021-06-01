@@ -3,7 +3,7 @@
 // @namespace   https://github.com/decss
 // @description OGame GalaxView - Galaxytool analog
 // @author      decss
-// @version     0.2.2
+// @version     0.2.2-b
 // @homepage    https://github.com/decss/ogame-galaxyview
 // @updateURL   https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
 // @downloadURL https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
@@ -56,12 +56,14 @@
 
 
     // Listeners
-    $('input[name=dev]').on('click', function () {
+    $('.toggle-ls').on('click', function () {
+        let name = 'ovg_' + $(this).attr('name');
+
         if ($(this).is(':checked')) {
-            localStorage.setItem('ovg_dev', 'true');
+            localStorage.setItem(name, 'true');
             $(this).parent().attr('style', 'color:red; font-weight:bold');
         } else {
-            localStorage.setItem('ovg_dev', 'false');
+            localStorage.setItem(name, 'false');
             $(this).parent().attr('style', '');
         }
     });
@@ -103,6 +105,10 @@
     function updateWidget(field, text, cls = 'gray') {
         let container = $('.ogv-foot .ogv-' + field + ' span');
         cls = cls ? 'ovg-' + cls : '';
+        if (field == 'data' && localStorage.getItem('ovg_debug') != 'true') {
+            container.html('');
+            return false;
+        }
         container.attr('class', cls);
         container.html(text);
     }
@@ -150,10 +156,11 @@
     }
 
     function drawWidget() {
+        let debugChecked = localStorage.getItem('ovg_debug') === 'true' ? 'checked' : '';
         let devChecked = localStorage.getItem('ovg_dev') === 'true' ? 'checked' : '';
         let html = `<style type="text/css">
             .ogv-widget {z-index:1; width:250px; max-height:90%; overflow-y:scroll; position:fixed; left:10px; top:30px; border:1px solid #333; padding:2px 5px; font-size:10px; line-height:16px; background:#000; color:#333;}
-            .ogv-controls {font-size:12px; margin:4px 0 2px 0; color:#7F7F7F}
+            .ogv-controls {font-size:11px; margin:4px 0 2px 0; color:#7F7F7F}
             .ogv-controls label {cursor:pointer;}
             .ovg-success {color:#4CFF00;}
             .ovg-error {color:#FF4C00; font-weight:bold;}
@@ -163,7 +170,8 @@
         <div class="ogv-widget">
             <div class="ogv-controls">
                 <label><input type="checkbox" name="autoscan"> Autoscan</label>
-                <label ${devChecked ? 'style="color:red; font-weight:bold"' : ''}><input type="checkbox" name="dev" ${devChecked}> Dev mode</label>
+                <label ${debugChecked ? 'style="color:red; font-weight:bold"' : ''}><input type="checkbox" class="toggle-ls" name="debug" ${debugChecked}> Debug</label>
+                <label ${devChecked ? 'style="color:red; font-weight:bold"' : ''}><input type="checkbox" class="toggle-ls" name="dev" ${devChecked}> Dev</label>
             </div>
             <div class="ogv-foot">
                 <div class="ogv-page">Page: <span>-</span></div>
