@@ -45,9 +45,11 @@
             }
 
         } else if (page == 'messages') {
-            if (checkChange('#fleetsgenericpage')) {
+            let selector = '#fleetsTab .ui-tabs-panel:visible #fleetsgenericpage'
+                         + ', #fleetsTab .ui-tabs-panel:visible #fleettrashmessagespage';
+            if (checkChange(selector)) {
                 console.log('... calling updateMessages request');
-                await doRequest('updateMessages', $('#fleetsgenericpage').html());
+                await doRequest('updateMessages', $(selector).html());
             }
         }
 

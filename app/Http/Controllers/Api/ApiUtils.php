@@ -7,7 +7,9 @@ namespace App\Http\Controllers\Api;
 use App\Models\Activity;
 use App\Models\EventPlayer;
 use App\Models\EventSystem;
+use App\Models\SystemApi;
 use App\Models\SystemDate;
+use App\Models\SystemItem;
 use Illuminate\Support\Facades\DB;
 
 class ApiUtils
@@ -312,6 +314,51 @@ class ApiUtils
         return $count;
     }
 
+    public static function updateEspReports($reports)
+    {
+        $count = 0;
+        $models = [];
+
+        // Load systems to get system_id by coords
+        $systemItems = SystemItem::where(function ($query) use ($reports) {
+            foreach ($reports as $report) {
+                list($gal, $sys, $pos) = explode(':', $report['coords']);
+                $query->orWhere([
+                    ['gal', $gal],
+                    ['sys', $sys],
+                    ['pos', $pos],
+                ]);
+            }
+        });
+        $systemItems->get();
+
+        foreach ($reports as $report) {
+            list($gal, $sys, $pos) = explode(':', $report['coords']);
+            $item = $systemItems->get()->where('gal', $gal)->where('sys', $sys)->where('pos', $pos)->first();
+            if (!$item) {
+                continue;
+            }
+
+            $models[] = [
+                'system_id' => $item->id,
+                'coords' => (string)$report['coords'],
+                'type' => (int)$report['type'],
+                'api' => (string)$report['api'],
+                'level' => (int)$report['level'],
+                'res' => $report['res'],
+                'fleet' => $report['fleet'],
+                'def' => $report['def'],
+            ];
+            $count++;
+        }
+
+        if ($models) {
+            SystemApi::insertOrIgnore($models);
+        }
+
+        return $count;
+    }
+
     private static function getPlayerEvents(array $array)
     {
         $ids = [];
@@ -529,7 +576,7 @@ class ApiUtils
     public static function parseVal($pattern, $text, $index = 1)
     {
         preg_match("~{$pattern}~i", $text, $matches);
-        if ($matches && $matches[$index]) {
+        if ($matches && ($matches[$index] || strlen($matches[$index]))) {
             return $matches[$index];
         }
 
@@ -772,7 +819,8 @@ class ApiUtils
     private static function parseMessagesItems(string $text)
     {
         $result = [
-            'esp' => [],
+            'esp-action' => [],
+            'esp-report' => [],
         ];
         $array = explode('</li>', $text);
 
@@ -783,8 +831,10 @@ class ApiUtils
 
             $type = self::getMessageType($row);
             // Espionage actions
-            if ($type == 'esp') {
-                $result[$type][] = self::getMessageEsp($row);;
+            if ($type == 'esp-action') {
+                $result[$type][] = self::getMessageEspAction($row);;
+            } elseif ($type == 'esp-report') {
+                $result[$type][] = self::getMessageEspReport($row);;
             }
         }
 
@@ -794,13 +844,15 @@ class ApiUtils
     private static function getMessageType(string $row)
     {
         if (stristr($row, 'Espionage action on')) {
-            return 'esp';
+            return 'esp-action';
+        } elseif (stristr($row, 'Espionage report from')) {
+            return 'esp-report';
         }
 
         return null;
     }
 
-    private static function getMessageEsp(string $row)
+    private static function getMessageEspAction(string $row)
     {
         $col1 = substr_replace($row, null, 0, strpos($row, 'A foreign fleet from'));
         $col1 = substr_replace($col1, null, strpos($col1, '</a>'));
@@ -819,6 +871,46 @@ class ApiUtils
             'playerId' => self::parseVal('data-playerId=&quot;([0-9]+)&quot;', $row),
             'date' => $date,
             // 'datetimeFmt' => $dateFmt,
+        ];
+
+        return $result;
+    }
+
+    private static function getMessageEspReport(string $row)
+    {
+        $col1 = substr_replace($row, null, 0, strpos($row, 'Espionage report from'));
+        $col1 = substr_replace($col1, null, strpos($col1, '</a>'));
+
+        $coords = self::parseVal('\[([0-9:]+)\]', $col1);
+        $type = stristr($col1, 'planetIcon moon') ? 2 : 1;
+        $apiStr = self::parseVal(" value='(sr-[a-z]+-[0-9]+-[A-z0-9]{20,})' ", $row);
+
+        $level = 0;
+        $res = null;
+        $def = null;
+        $fleet = null;
+        if (stristr($row, 'Resources: ')) {
+            $level = 1;
+            $res = self::parseVal('Resources: ([0-9\.]+(Mn)?)<\/span>', $row);
+        }
+        if (stristr($row, 'Fleets: ')) {
+            $level = 2;
+            $fleet = self::parseVal('Fleets: ([0-9\.]+(Mn)?)<\/span>', $row);
+        }
+        if (stristr($row, 'Defence: ')) {
+            $level = 3;
+            $def = self::parseVal('Defence: ([0-9\.]+(Mn)?)<\/span>', $row);
+        }
+
+        $result = [
+            // 'msgId' => self::parseVal('data-msg-id="([0-9]+)"', $row),
+            'coords' => $coords,
+            'type' => intval($type),
+            'api' => $apiStr,
+            'level' => $level,
+            'res' => $res,
+            'fleet' => $fleet,
+            'def' => $def,
         ];
 
         return $result;

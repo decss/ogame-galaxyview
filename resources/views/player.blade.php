@@ -49,8 +49,9 @@
                     @endforeach
                 @endif
             </table>
-
         </div>
+
+
         <div class="col-12 col-md-6 col-lg-8">
             <h4 class="text-start">Activity</h4>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -110,6 +111,55 @@
                     config
                 );
             </script>
+        </div>
+
+        <div class="col">
+            <h4>Espionage reports history</h4>
+            <table class="table table-dark table-bordered">
+                <tr>
+                    <th>Coords</th>
+                    <th>Res</th>
+                    <th>Fleet</th>
+                    <th>Def</th>
+                    <th>Api</th>
+                    <th>Date, <span class="fw-light">d.m h:m</span></th>
+                    <th>Links</th>
+                </tr>
+                @if(isset($player->items))
+                    @foreach($player->items as $item)
+                        @foreach($item->api as $api)
+                            <tr>
+                                <td>
+                                    @if($api->type == 2) Moon on @endif
+                                    <span class="{{ $item->updatedArray()['color'] }}">{{ $item->coords }}</span>
+                                </td>
+
+                                @if(strlen($api->res))
+                                    <td class="@if(stristr($api->res, 'Mn')) color5 @endif">{{ $api->res }}</td>
+                                @else
+                                    <td class="color7">no data</td>
+                                @endif
+
+                                @if(strlen($api->fleet))
+                                    <td class="@if(stristr($api->fleet, 'Mn')) color5 @endif">{{ $api->fleet }}</td>
+                                @else
+                                    <td class="color7">no data</td>
+                                @endif
+
+                                @if(strlen($api->def))
+                                    <td class="@if(stristr($api->def, 'Mn')) color5 @endif">{{ $api->def }}</td>
+                                @else
+                                    <td class="color7">no data</td>
+                                @endif
+
+                                <td class="small">{{ $api->api }}</td>
+                                <td class="small">{{ \Carbon\Carbon::parse($api->created)->format('d.m H:i') }}</td>
+                                <td><a href="https://trashsim.universeview.be/?SR_KEY={{ $api->api }}" target="_blank" rel="noreferrer">TrashSim</a></td>
+                            </tr>
+                        @endforeach
+                    @endforeach
+                @endif
+            </table>
         </div>
     </div>
 

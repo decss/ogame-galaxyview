@@ -91,14 +91,15 @@ class ApiController extends ApiManiController
          );
 
         $array = ApiUtils::parseMessages($postData);
-        $result['espActivity'] = ApiUtils::updateEspEvents($array['esp']);
+        $result['espActions'] = ApiUtils::updateEspEvents($array['esp-action']);
+        $result['espReports'] = ApiUtils::updateEspReports($array['esp-report']);
 
         $this->setRespStatus("success");
 
         $this->setRespMessage("Messages was readed");
         $this->setRespData(
             json_encode($result, JSON_PRETTY_PRINT) . "\r\n------------------\r\n"
-            . json_encode($array['esp'], JSON_PRETTY_PRINT)
+            . json_encode($array, JSON_PRETTY_PRINT)
         );
 
         return $this->getResp();

@@ -16,6 +16,11 @@ class SystemItem extends Model
         return $this->belongsTo(Player::class);
     }
 
+    public function api()
+    {
+        return $this->hasMany(SystemApi::class, 'system_id')->orderBy('created', 'desc');
+    }
+
     public function debrisField()
     {
         $debris = $this->field_me + $this->field_cry;
