@@ -18,7 +18,10 @@ class SystemItem extends Model
 
     public function api()
     {
-        return $this->hasMany(SystemApi::class, 'system_id')->orderBy('created', 'desc');
+        return $this->hasMany(SystemApi::class, 'system_id')
+            ->orderBy('coords')
+            ->orderBy('type')
+            ->orderBy('created', 'desc');
     }
 
     public function debrisField()
