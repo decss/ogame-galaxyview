@@ -17,6 +17,19 @@ class UiPlayerController extends UiMainController
         $player->load('items', 'items.api');
         $player->load('alliance');
 
+        $sliced = 5;
+        foreach ($player->items as $key => $item) {
+            if (!$item->api) {
+                continue;
+            }
+
+            $apis[1] = $item->api->where('type', '=', '1')->sortByDesc('date')->slice(0, $sliced);
+            $apis[2] = $item->api->where('type', '=', '2')->sortByDesc('date')->slice(0, $sliced);
+            $api = $apis[1]->concat($apis[2]);
+
+            $player->items[$key]->api = $api;
+        }
+
         // Player Activity chart data
         $activity = $this->getChartActivityData($player);
 

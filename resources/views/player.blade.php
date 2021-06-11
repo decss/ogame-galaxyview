@@ -115,7 +115,7 @@
 
         <div class="col">
             <h4>Espionage reports history</h4>
-            <table class="table table-dark table-bordered">
+            <table class="table table-dark table-bordered small">
                 <tr>
                     <th>Coords</th>
                     <th>Res</th>
@@ -127,7 +127,16 @@
                 </tr>
                 @if(isset($player->items))
                     @foreach($player->items as $item)
+                        @php
+                        if (isset($drawContent) && isset($tmp) && $tmp != $item->coords) {
+                            echo '<tr><td colspan="7" style="background: #2f2f2f;"></td></tr>';
+                            unset($drawContent);
+                        }
+                        $tmp = $item->coords;
+                        @endphp
+
                         @foreach($item->api as $api)
+                            @php $drawContent = true; @endphp
                             <tr>
                                 <td>
                                     @if($api->type == 2) Moon on @endif
@@ -153,7 +162,7 @@
                                 @endif
 
                                 <td class="small">{{ $api->api }}</td>
-                                <td class="small">{{ \Carbon\Carbon::parse($api->date)->format('d.m H:i') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($api->date)->format('d.m H:i') }}</td>
                                 <td><a href="https://trashsim.universeview.be/?SR_KEY={{ $api->api }}" target="_blank" rel="noreferrer">TrashSim</a></td>
                             </tr>
                         @endforeach
