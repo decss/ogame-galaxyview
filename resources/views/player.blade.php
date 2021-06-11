@@ -153,7 +153,7 @@
                                 @endif
 
                                 <td class="small">{{ $api->api }}</td>
-                                <td class="small">{{ \Carbon\Carbon::parse($api->created)->format('d.m H:i') }}</td>
+                                <td class="small">{{ \Carbon\Carbon::parse($api->date)->format('d.m H:i') }}</td>
                                 <td><a href="https://trashsim.universeview.be/?SR_KEY={{ $api->api }}" target="_blank" rel="noreferrer">TrashSim</a></td>
                             </tr>
                         @endforeach
