@@ -37,7 +37,7 @@
                         <tr>
                             <td>
                                 <a class="{{ $item->updatedArray()['color'] }}" href="{{ route('galaxy.view', ['gal' => $item->gal, 'sys' => $item->sys, 'p' => $item->pos]) }}">{{ $item->gal }}:{{ $item->sys }}:{{ $item->pos }}</a>
-                                <i class="small"><a href="{{ env('OGV_GAME_URL') }}?page=ingame&component=galaxy&galaxy={{ $item->gal }}& system={{ $item->sys }}&position={{ $item->pos }}" target="_blank" rel="noreferrer">show</a></i>
+                                <i class="small"><a href="{{ env('OGV_GAME_URL') }}?page=ingame&component=galaxy&galaxy={{ $item->gal }}&system={{ $item->sys }}&position={{ $item->pos }}" target="_blank" rel="noreferrer">show</a></i>
                             </td>
                             <td>{{ $item->planet_name }}</td>
                             <td>
