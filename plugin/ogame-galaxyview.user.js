@@ -3,7 +3,7 @@
 // @namespace   https://github.com/decss
 // @description OGame GalaxView - Galaxytool analog
 // @author      decss
-// @version     0.2.2-b
+// @version     0.2.2-c
 // @homepage    https://github.com/decss/ogame-galaxyview
 // @updateURL   https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
 // @downloadURL https://github.com/decss/ogame-galaxyview/raw/dev/plugin/ogame-galaxyview.user.js
