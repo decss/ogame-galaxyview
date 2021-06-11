@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Ui;
 
 use App\Models\Player;
 use App\Models\SystemItem;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class UiPlayerController extends UiMainController
@@ -13,16 +14,14 @@ class UiPlayerController extends UiMainController
     public function player($id)
     {
         $player = Player::find($id);
-        $items = SystemItem::where(['player_id' => $id])->get();
-        $items->load('player.alliance');
-
+        $player->load('items');
+        $player->load('alliance');
 
         // Player Activity chart data
         $activity = $this->getChartActivityData($player);
 
         return view('player', [
             'player' => $player,
-            'items' => $items,
             'activity' => $activity,
         ]);
     }
@@ -47,7 +46,10 @@ class UiPlayerController extends UiMainController
         }
 
         $activity = [];
-        foreach ($player->activity as $item) {
+        $sorted = $player->activity->sortBy(function ($obj, $key) {
+            return Carbon::parse($obj['time']);
+        });
+        foreach ($sorted as $item) {
             $time = mb_substr($item->time, 0, 5);
             if (!isset($activity[$item->type][$time])) {
                 $activity[$item->type][$time] = 1;

@@ -119,13 +119,19 @@ class UiEventsController extends UiMainController
         if ($period == 'yesterday') {
             $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-1 days"))
                 . "' AND l.created <= '" . date("Y-m-d 23:59:59", strtotime("-1 days")) . "'";
+        } elseif ($period == '2-days') {
+            $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-2 days"))
+                . "' AND l.created <= '" . date("Y-m-d 23:59:59", strtotime("-2 days")) . "'";
         } elseif ($period == '3-days') {
             $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-3 days"))
+                . "' AND l.created <= '" . date("Y-m-d 23:59:59", strtotime("-3 days")) . "'";
+        } elseif ($period == 'last-3-days') {
+            $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-3 days"))
                 . "' AND l.created <= '" . date("Y-m-d 23:59:59") . "'";
-        } elseif ($period == '7-days') {
+        } elseif ($period == 'last-7-days') {
             $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-7 days"))
                 . "' AND l.created <= '" . date("Y-m-d 23:59:59") . "'";
-        } elseif ($period == '30-days') {
+        } elseif ($period == 'last-30-days') {
             $where = "l.created >= '" . date("Y-m-d 00:00:00", strtotime("-30 days"))
                 . "' AND l.created <= '" . date("Y-m-d 23:59:59") . "'";
         } else {

@@ -84,7 +84,10 @@
                     </td>
                     <td class="smaller text-start">
                         @foreach($player->items as $item)
-                            <a href="{{ route('galaxy.view', ['gal' => $item->gal, 'sys' => $item->sys, 'p' => $item->pos]) }}" class="pe-1 {{ $item->getUpdateColor() }}">{{$item->coords}}</a>
+                            <span class="pe-1">
+                                <!--<a href="{{ route('galaxy.view', ['gal' => $item->gal, 'sys' => $item->sys, 'p' => $item->pos]) }}" class="{{ $item->getUpdateColor() }}">{{$item->coords}}</a>-->
+                                <a href="{{ env('OGV_GAME_URL') }}?page=ingame&component=galaxy&galaxy={{ $item->gal }}& system={{ $item->sys }}&position={{ $item->pos }}" class="{{ $item->getUpdateColor() }}" target="_blank" rel="noreferrer">{{ $item->coords }}</a>
+                            </span>
                         @endforeach
                     </td>
                     <td>//TODO:</td>

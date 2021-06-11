@@ -31,21 +31,23 @@
                     <th>Name</th>
                     <th>Moon</th>
                 </tr>
-                @foreach($items as $item)
-                    <tr>
-                        <td class="{{ $item->updatedArray()['color'] }}">
-                            <a href="{{ route('galaxy.view', ['gal' => $item->gal, 'sys' => $item->sys, 'p' => $item->pos]) }}">
-                                {{ $item->gal }}:{{ $item->sys }}:{{ $item->pos }}
-                            </a>
-                        </td>
-                        <td>{{ $item->planet_name }}</td>
-                        <td>
-                            @if($item->moon_size)
-                                {{ $item->moon_name }} [<span class="small">{{ $item->moon_size }} km]</span>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
+
+                @if(isset($player->items))
+                    @foreach($player->items as $item)
+                        <tr>
+                            <td>
+                                <a class="{{ $item->updatedArray()['color'] }}" href="{{ route('galaxy.view', ['gal' => $item->gal, 'sys' => $item->sys, 'p' => $item->pos]) }}">{{ $item->gal }}:{{ $item->sys }}:{{ $item->pos }}</a>
+                                <i class="small"><a href="{{ env('OGV_GAME_URL') }}?page=ingame&component=galaxy&galaxy={{ $item->gal }}& system={{ $item->sys }}&position={{ $item->pos }}" target="_blank" rel="noreferrer">show</a></i>
+                            </td>
+                            <td>{{ $item->planet_name }}</td>
+                            <td>
+                                @if($item->moon_size)
+                                    {{ $item->moon_name }} [<span class="small">{{ $item->moon_size }} km]</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
             </table>
 
         </div>
@@ -54,6 +56,7 @@
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <div>
                 <canvas id="activityChart" style="max-height: auto;"></canvas>
+                <div class="pt-2 text-warning small"><i>Chart timezone is <b>UTC+3</b>. Server time: <b>{!! date('H:i:s') !!}</b></i></div>
             </div>
             <script>
                 const data = {
@@ -81,6 +84,11 @@
                     type: 'bar',
                     data: data,
                     options: {
+                        plugins: {
+                            tooltip: {
+                                enabled: false
+                            }
+                        },
                         responsive: true,
                         scales: {
                             x: {

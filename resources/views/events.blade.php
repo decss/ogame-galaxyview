@@ -11,14 +11,17 @@
         <li class="page-item {{ $period == 'yesterday' ? 'active' : '' }}">
             <a class="page-link" href="{{ route('events', ['period' => 'yesterday']) }}">Yesterday</a>
         </li>
+        <li class="page-item {{ $period == '2-days' ? 'active' : '' }}">
+            <a class="page-link" href="{{ route('events', ['period' => '2-days']) }}">2 days ago</a>
+        </li>
         <li class="page-item {{ $period == '3-days' ? 'active' : '' }}">
-            <a class="page-link" href="{{ route('events', ['period' => '3-days']) }}">Last 3 days</a>
+            <a class="page-link" href="{{ route('events', ['period' => '3-days']) }}">3 days ago</a>
         </li>
-        <li class="page-item {{ $period == '7-days' ? 'active' : '' }}">
-            <a class="page-link" href="{{ route('events', ['period' => '7-days']) }}">Last 7 days</a>
+        <li class="page-item {{ $period == 'last-3-days' ? 'active' : '' }}">
+            <a class="page-link" href="{{ route('events', ['period' => 'last-3-days']) }}">Last 3 days</a>
         </li>
-        <li class="page-item {{ $period == '30-days' ? 'active' : '' }}">
-            <a class="page-link" href="{{ route('events', ['period' => '30-days']) }}">Last 30 days</a>
+        <li class="page-item {{ $period == 'last-7-days' ? 'active' : '' }}">
+            <a class="page-link" href="{{ route('events', ['period' => 'last-7-days']) }}">Last 7 days</a>
         </li>
     </ul>
     <div class="row">
@@ -79,7 +82,7 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('galaxy.view', ['gal' => $event['gal'], 'sys' => $event['sys'], 'p' => $event['pos']]) }}">{{ $event['coords'] }}</a>
-                                    <i class="small"><a href="https://s175-en.ogame.gameforge.com/game/index.php?page=ingame&component=galaxy&galaxy={{ $event['gal'] }}&system={{ $event['sys'] }}&position={{ $event['pos'] }}" target="_blank" rel="noreferrer">show</a></i>
+                                    <i class="small"><a href="{{ env('OGV_GAME_URL') }}?page=ingame&component=galaxy&galaxy={{ $event['gal'] }}&system={{ $event['sys'] }}&position={{ $event['pos'] }}" target="_blank" rel="noreferrer">show</a></i>
                                 </td>
                                 <td>
                                     @foreach($event['rows'] as $row)

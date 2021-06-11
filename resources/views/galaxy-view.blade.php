@@ -9,8 +9,6 @@
                           action="{{ route('galaxy.view', ['gal' => $galaxy, 'sys' => $system]) }}">
                         <div class="col">
                             @if(isset($date))
-                                @php
-                                @endphp
                                 <div class="{{ $date['color'] }}">Relevance: {{ $date['text'] }}</div>
                             @endif
                         </div>
@@ -37,7 +35,9 @@
                                    type="button" class="btn btn-primary">&raquo;</a>
                             </div>
                         </div>
-                        <div class="col"></div>
+                        <div class="col">
+                            <a href="{{ env('OGV_GAME_URL') }}?page=ingame&component=galaxy&galaxy={{ $galaxy }}& system={{ $system }}" target="_blank" rel="noreferrer">Show in game</a>
+                        </div>
                     </form>
                 </td>
             </tr>

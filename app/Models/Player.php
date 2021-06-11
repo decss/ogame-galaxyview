@@ -14,7 +14,7 @@ class Player extends Model
 
     public function items()
     {
-        return $this->hasMany(SystemItem::class);
+        return $this->hasMany(SystemItem::class)->orderBy('gal')->orderBy('sys')->orderBy('pos');
     }
 
     public function activity()
