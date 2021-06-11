@@ -75,6 +75,10 @@ class ApiUtils
             'planets' => 0,
         ];
 
+        if (!$array['galaxy'] || !$array['system']) {
+            return $result;
+        }
+
         $i = 0;
         $allyIds = [];
         $playerIds = [];
@@ -188,23 +192,23 @@ class ApiUtils
         }
 
         // Planets/Systems
-        if ($planetsQuery) {
-            // Clear system
-            $delParams = [
-                ':gal' => $array['galaxy'],
-                ':sys' => $array['system'],
-            ];
-            $delQuery = "DELETE FROM ovg_systems WHERE gal = :gal AND sys = :sys"
-                . ($array['ignored'] ? " AND pos NOT IN (" . implode(',', $array['ignored']) . ")" : "");
-            DB::delete($delQuery, $delParams);
+        // Clear system
+        $delParams = [
+            ':gal' => $array['galaxy'],
+            ':sys' => $array['system'],
+        ];
+        $delQuery = "DELETE FROM ovg_systems WHERE gal = :gal AND sys = :sys"
+            . ($array['ignored'] ? " AND pos NOT IN (" . implode(',', $array['ignored']) . ")" : "");
+        DB::delete($delQuery, $delParams);
 
+        if ($planetsQuery) {
             // Write new system entities
             $planetsQuery = "INSERT INTO ovg_systems
                   (gal, sys, pos, player_id, planet_id, planet_name, moon_name, moon_size, field_me, field_cry)
                   VALUES {$planetsQuery}";
             DB::insert($planetsQuery, $planetsParams);
-
         }
+
         // System update date
         $dateParams = [
             ':gal' => $array['galaxy'],

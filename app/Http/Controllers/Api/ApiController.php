@@ -57,10 +57,12 @@ class ApiController extends ApiManiController
             return $this->getResp();
         }
 
-        // Log::channel('single')->info(
-        //    "\r\n------------------------------------------------------------------------------\r\n"
-        //    . urldecode($postData)
-        // );
+        if (config('app.debug')) {
+            Log::channel('single')->info(
+                "\r\n\r\n\r\n------------------------------------------------------------------------------\r\n"
+                . urldecode($postData)
+            );
+        }
 
         $array = ApiUtils::parseGalaxy($postData);
         $result['events'] = ApiUtils::updateEvents($array);
@@ -85,10 +87,12 @@ class ApiController extends ApiManiController
             return $this->getResp();
         }
 
-         Log::channel('single')->info(
-            "\r\n------------------------------------------------------------------------------\r\n"
-            . urldecode($postData)
-         );
+        if (config('app.debug')) {
+            Log::channel('single')->info(
+                "\r\n------------------------------------------------------------------------------\r\n"
+                . urldecode($postData)
+            );
+        }
 
         $array = ApiUtils::parseMessages($postData);
         $result['espActions'] = ApiUtils::updateEspEvents($array['esp-action']);
