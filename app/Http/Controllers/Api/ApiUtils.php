@@ -348,7 +348,7 @@ class ApiUtils
                 'res' => $report['res'],
                 'fleet' => $report['fleet'],
                 'def' => $report['def'],
-                'date' => $report['dateFmt'],
+                'date' => date("Y-m-d H:i:s", strtotime($report['date']) + 3600 * 2),
             ];
             $count++;
         }
@@ -904,7 +904,6 @@ class ApiUtils
         }
 
         $date = self::parseVal('msg_date fright">([0-9\s\.:]+)</span>', $row);
-        $dateFmt = date("Y-m-d H:i:s", strtotime($date));
 
         $result = [
             // 'msgId' => self::parseVal('data-msg-id="([0-9]+)"', $row),
@@ -915,8 +914,7 @@ class ApiUtils
             'res' => $res,
             'fleet' => $fleet,
             'def' => $def,
-            // 'date' => $date,
-            'dateFmt' => $dateFmt,
+            'date' => $date,
         ];
 
         return $result;
