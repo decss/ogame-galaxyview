@@ -26,8 +26,11 @@ class UiEventsController extends UiMainController
         if ($filters['systemTypes']) {
             $where .= ($where ? " AND " : "") . "l.type IN (" . implode(',', $filters['systemTypes']) . ")";
         }
-        if ($filters['systemTh']) {
-            $where .= ($where ? " AND " : "") . "(l.threshold >= " . $filters['systemTh'] . " OR l.threshold = 0)";
+        if ($filters['moonTh']) {
+            $where .= ($where ? " AND " : "") . "(l.type NOT IN (20,22) OR l.threshold >= " . $filters['moonTh'] . ")";
+        }
+        if ($filters['debrisTh']) {
+            $where .= ($where ? " AND " : "") . "(l.type NOT IN (30,31,32,33) OR l.threshold >= " . $filters['debrisTh'] . ")";
         }
         $where .= ($where ? " AND " : "") . self::getPeriodWhere($period);
         $systemEvents = [];
@@ -60,16 +63,22 @@ class UiEventsController extends UiMainController
         if ($filters['playerTypes']) {
             $where .= ($where ? " AND " : "") . "l.type IN (" . implode(',', $filters['playerTypes']) . ")";
         }
+        if ($filters['rankTh']) {
+            $where .= ($where ? " AND " : "") . "p.rank <= " . $filters['rankTh'];
+        }
         $where .= ($where ? " AND " : "") . self::getPeriodWhere($period);
         $playerEvents = [];
         $ids = [];
         $alliances = [];
         $whereVac = null;
         if (isset($filters['playerNovac']) && $filters['playerNovac'] == true) {
-            $whereVac = "INNER JOIN ogv_players AS p ON p.id = l.player_id";
+            $whereVac = "";
             $where .= ($where ? " AND " : "") . "p.v = 0";
         }
-        $rows = DB::select("SELECT l.* FROM ogv_players_log AS l " . $whereVac . ($where ? " WHERE " . $where : "") . " ORDER BY l.created DESC");
+        $rows = DB::select("SELECT l.* FROM ogv_players_log AS l
+            INNER JOIN ogv_players AS p ON p.id = l.player_id "
+            . ($where ? " WHERE " . $where : "")
+            . " ORDER BY l.created DESC");
         $events = EventPlayer::hydrate($rows);
         $events->load('player');
         foreach ($rows as $row) {
@@ -144,14 +153,7 @@ class UiEventsController extends UiMainController
 
     private function getFilters(Request $request = null)
     {
-        $filters = [
-            'system' => [],
-            'systemTh' => 0,
-            'systemTypes' => [],
-            'player' => [],
-            'playerTypes' => [],
-            'playerNovac' => false,
-        ];
+        $filters = [];
 
         if (isset($_COOKIE['filters'])) {
             $filters = json_decode($_COOKIE['filters'], true);
@@ -160,16 +162,42 @@ class UiEventsController extends UiMainController
         if ($request) {
             $system = null;
             $player = null;
-            if ($request->has('filterSystem')) {
+            if ($request->has('filterEvents')) {
                 $filters['system'] = (array)$request->get('system');
-                $filters['systemTh'] = intval($request->get('systemTh'));
-            } elseif ($request->has('filterPlayer')) {
+                $filters['moonTh'] = intval($request->get('moonTh'));
+                $filters['debrisTh'] = intval($request->get('debrisTh'));
+                $filters['rankTh'] = intval($request->get('rankTh'));
                 $filters['player'] = (array)$request->get('player');
                 $filters['playerNovac'] = $request->get('playerNovac') == '1' ? true : false;
             }
 
             $filters['systemTypes'] = $this->getFilterTypes($filters['system']);
             $filters['playerTypes'] = $this->getFilterTypes($filters['player']);
+        }
+
+        if (!array_key_exists('system', $filters)) {
+            $filters['system'] = [];
+        }
+        if (!array_key_exists('moonTh', $filters)) {
+            $filters['moonTh'] = 0;
+        }
+        if (!array_key_exists('debrisTh', $filters)) {
+            $filters['debrisTh'] = 0;
+        }
+        if (!array_key_exists('rankTh', $filters)) {
+            $filters['rankTh'] = 0;
+        }
+        if (!array_key_exists('systemTypes', $filters)) {
+            $filters['systemTypes'] = [];
+        }
+        if (!array_key_exists('player', $filters)) {
+            $filters['player'] = [];
+        }
+        if (!array_key_exists('playerTypes', $filters)) {
+            $filters['playerTypes'] = [];
+        }
+        if (!array_key_exists('playerNovac', $filters)) {
+            $filters['playerNovac'] = false;
         }
 
         return $filters;

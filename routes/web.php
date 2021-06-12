@@ -20,13 +20,15 @@ use App\Http\Controllers\Ui\UiEventsController;
 use App\Http\Controllers\Ui\UiController;
 use App\Http\Controllers\Ui\UiGalaxyController;
 use App\Http\Controllers\Ui\UiPlayerController;
+use App\Http\Middleware\LogRoute;
+
 //use App\Http\Controllers\Ui\UiSearchController;
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'ui', 'namespace' => '\\'], function () use ($router) {
+$router->group(['prefix' => 'ui', 'namespace' => '\\', 'middleware' => LogRoute::class], function () use ($router) {
     $router->get('/', ['as' => 'main', function () {
         return view('players');
     }]);
@@ -54,7 +56,7 @@ $router->group(['prefix' => 'ui', 'namespace' => '\\'], function () use ($router
     $router->get('adm', ['as' => 'adm', 'uses' => UiAdmController::class . '@index']);
 });
 
-$router->group(['prefix' => '/api', 'namespace' => '\\'], function () use ($router) {
+$router->group(['prefix' => '/api', 'namespace' => '\\', 'middleware' => LogRoute::class], function () use ($router) {
     $router->get('test', ApiController::class . '@test');
 
     $router->post('updateSystem', ApiController::class . '@updateSystem');

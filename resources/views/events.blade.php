@@ -24,8 +24,110 @@
             <a class="page-link" href="{{ route('events', ['period' => 'last-7-days']) }}">Last 7 days</a>
         </li>
     </ul>
+
+
+
+
+
+    <form class="small mb-2" action="{{ route('events', ['period' => $period]) }}" method="post">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="row">
+                    <div class="col-12">
+                        <h4>System changes</h4>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-check">
+                            <label><input name="system[]" class="form-check-input" type="checkbox" value="10" {{ in_array('10', $filters['system']) ? 'checked' : '' }}>New planet</label>
+                        </div>
+                        <div class="form-check">
+                            <label><input name="system[]" class="form-check-input" type="checkbox" value="11" {{ in_array('11', $filters['system']) ? 'checked' : '' }}>Destr planet</label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-check">
+                            <label><input name="system[]" class="form-check-input" type="checkbox" value="20" {{ in_array('20', $filters['system']) ? 'checked' : '' }}>New moon</label>
+                        </div>
+                        <div class="form-check">
+                            <label><input name="system[]" class="form-check-input" type="checkbox" value="22" {{ in_array('22', $filters['system']) ? 'checked' : '' }}>Destr moon</label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                <div class="form-check">
+                    <label><input name="system[]" class="form-check-input" type="checkbox" value="30,32" {{ in_array('30,32', $filters['system']) ? 'checked' : '' }}>New/Inc debris</label>
+                </div>
+                <div class="form-check">
+                    <label><input name="system[]" class="form-check-input" type="checkbox" value="31,33" {{ in_array('31,33', $filters['system']) ? 'checked' : '' }}>Rem/Dec debris</label>
+                </div>
+            </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="row">
+                    <div class="col-12">
+                        <h4>Player changes</h4>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-check">
+                            <label><input name="player[]" class="form-check-input" type="checkbox" value="40" {{ in_array('40', $filters['player']) ? 'checked' : '' }}>Name change</label>
+                        </div>
+                        <div class="form-check">
+                            <label><input name="player[]" class="form-check-input" type="checkbox" value="60" {{ in_array('60', $filters['player']) ? 'checked' : '' }}>Rank change</label>
+                        </div>
+                        <div class="form-check">
+                            <label><input name="player[]" class="form-check-input" type="checkbox" value="70" {{ in_array('70', $filters['player']) ? 'checked' : '' }}>Join/left ally</label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-check">
+                            <label><input name="player[]" class="form-check-input" type="checkbox" value="41" {{ in_array('41', $filters['player']) ? 'checked' : '' }}>Status <span class="color-o">Outlaw</span></label>
+                        </div>
+                        <div class="form-check">
+                            <label><input name="player[]" class="form-check-input" type="checkbox" value="42" {{ in_array('42', $filters['player']) ? 'checked' : '' }}>Status <span class="color-v">Vacation</span></label>
+                        </div>
+                        <div class="form-check">
+                            <label><input name="player[]" class="form-check-input" type="checkbox" value="43" {{ in_array('43', $filters['player']) ? 'checked' : '' }}>Status <span class="color-b">Banned</span></label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                <div class="form-check">
+                    <label><input name="player[]" class="form-check-input" type="checkbox" value="44" {{ in_array('44', $filters['player']) ? 'checked' : '' }}>Status <span class="color-i">Inactive</span></label>
+                </div>
+                <div class="form-check">
+                    <label><input name="playerNovac" class="form-check-input" type="checkbox" value="1" {{ isset($filters['playerNovac']) && $filters['playerNovac'] == true ? 'checked' : '' }}>Ignore <span class="color-v">Vac</span> players</label>
+                <!--
+                        <label><input name="player[]" class="form-check-input" type="checkbox" value="45" {{ in_array('45', $filters['player']) ? 'checked' : '' }}>Status <span class="color-hp">Honourable</span></label>
+                        -->
+                </div>
+            </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 text-end">
+                <div class="input-group input-group-sm" style="">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Threshold:</span>
+                    <input type="text" name="moonTh" value="{{ ($filters['moonTh'] ? $filters['moonTh'] : '') }}" class="form-control" aria-label="Sizing example input" placeholder="Min moon size">
+                    <input type="text" name="debrisTh" value="{{ ($filters['debrisTh'] ? $filters['debrisTh'] : '') }}" class="form-control" aria-label="Sizing example input" placeholder="Min debris size">
+                    <input type="text" name="rankTh" value="{{ ($filters['rankTh'] ? $filters['rankTh'] : '') }}" class="form-control" aria-label="Sizing example input" placeholder="Max rank (for players)">
+                    <button type="submit" name="filterEvents" class="btn btn-primary btn-sm">Filter events</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+
+
+
+
+
+
+
+
     <div class="row">
         <div class="col-12 col-md-6">
+            {{--
             <h4>System changes</h4>
             <form class="row small" action="{{ route('events', ['period' => $period]) }}" method="post">
                 <div class="col-4">
@@ -60,6 +162,7 @@
                     </div>
                 </div>
             </form>
+            --}}
             <table class="table caption-top table-dark table-bordered text-center small">
                 <tr>
                     <th scope="col">Date</th>
@@ -115,6 +218,7 @@
 
 
         <div class="col-12 col-md-6">
+            {{--
             <h4>Player changes</h4>
             <form class="row small" action="{{ route('events', ['period' => $period]) }}" method="post">
                 <div class="col-4">
@@ -154,6 +258,7 @@
                 <div class="col-12 text-end mb-1">
                 </div>
             </form>
+            --}}
             <table class="table caption-top table-dark table-bordered text-center small">
                 <tr>
                     <th scope="col">Date</th>
