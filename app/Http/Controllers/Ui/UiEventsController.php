@@ -153,7 +153,16 @@ class UiEventsController extends UiMainController
 
     private function getFilters(Request $request = null)
     {
-        $filters = [];
+        $filters = [
+            'system' => [],
+            'moonTh' => 0,
+            'debrisTh' => 0,
+            'rankTh' => 0,
+            'systemTypes' => [],
+            'player' => [],
+            'playerTypes' => [],
+            'playerNovac' => false,
+        ];
 
         if (isset($_COOKIE['filters'])) {
             $filters = json_decode($_COOKIE['filters'], true);

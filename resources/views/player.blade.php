@@ -162,7 +162,7 @@
                                 @endif
 
                                 <td class="small">{{ $api->api }}</td>
-                                <td>{{ \Carbon\Carbon::parse($api->date)->format('d.m H:i') }}</td>
+                                <td @if(\Carbon\Carbon::parse($api->date)->format('d.m') == date("d.m")) style="background: #327832" @endif>{{ \Carbon\Carbon::parse($api->date)->format('d.m H:i') }}</td>
                                 <td><a href="https://trashsim.universeview.be/?SR_KEY={{ $api->api }}" target="_blank" rel="noreferrer">TrashSim</a></td>
                             </tr>
                         @endforeach
