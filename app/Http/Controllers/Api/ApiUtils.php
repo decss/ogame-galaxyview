@@ -203,8 +203,7 @@ class ApiUtils
 
         if ($planetsQuery) {
             // Write new system entities
-            $planetsQuery = "INSERT INTO ovg_systems
-                  (gal, sys, pos, player_id, planet_id, planet_name, moon_name, moon_size, field_me, field_cry)
+            $planetsQuery = "INSERT INTO ovg_systems (gal, sys, pos, player_id, planet_id, planet_name, moon_name, moon_size, field_me, field_cry)
                   VALUES {$planetsQuery}";
             DB::insert($planetsQuery, $planetsParams);
         }
@@ -843,6 +842,12 @@ class ApiUtils
             }
         }
 
+        foreach ($result['esp-report'] as $i => $arr) {
+            if ($arr == null) {
+                unset($result['esp-report'][$i]);
+            }
+        }
+
         return $result;
     }
 
@@ -889,6 +894,9 @@ class ApiUtils
         $coords = self::parseVal('\[([0-9:]+)\]', $col1);
         $type = stristr($col1, 'planetIcon moon') ? 2 : 1;
         $apiStr = self::parseVal(" value='(sr-[a-z]+-[0-9]+-[A-z0-9]{20,})' ", $row);
+        if (!$coords) {
+            return null;
+        }
 
         $level = 0;
         $res = null;
