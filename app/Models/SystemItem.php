@@ -16,14 +16,14 @@ class SystemItem extends Model
         return $this->belongsTo(Player::class);
     }
 
-    public function api()
-    {
-        return $this->hasMany(SystemApi::class, 'system_id')
-             ->orderBy('coords')
-             ->orderBy('type')
-             ->orderBy('date', 'desc')
-            ;
-    }
+    // public function api()
+    // {
+    //     return $this->hasMany(SystemApi::class, 'system_id')
+    //          ->orderBy('coords')
+    //          ->orderBy('type')
+    //          ->orderBy('date', 'desc')
+    //         ;
+    // }
 
     public function debrisField()
     {

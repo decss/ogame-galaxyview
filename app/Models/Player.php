@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Uuid\Exception\TimeSourceException;
 
 class Player extends Model
 {
@@ -25,6 +26,24 @@ class Player extends Model
     public function alliance()
     {
         return $this->belongsTo(Alliance::class, 'ally_id');
+    }
+
+    public function loadItemsApi()
+    {
+        $coords = [];
+        foreach ($this->items as $key => $item) {
+            $coords[] = $item['gal'] . ":" . $item['sys'] . ":" . $item['pos'];
+        }
+        $coords = array_unique($coords);
+        $apis = SystemApi::whereIn('coords', $coords)->get();
+
+        foreach ($this->items as $key => $item) {
+            $itemApis = $apis->where('coords', "{$item->gal}:{$item->sys}:{$item->pos}");
+            if ($itemApis) {
+                $itemApis = $itemApis->sortByDesc('date');
+                $this->items[$key]->api = $itemApis;
+            }
+        }
     }
 
     public function getNameAttribute($value)

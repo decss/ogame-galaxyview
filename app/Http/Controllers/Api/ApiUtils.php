@@ -336,14 +336,14 @@ class ApiUtils
         $systemItems->get();
 
         foreach ($reports as $report) {
-            list($gal, $sys, $pos) = explode(':', $report['coords']);
-            $item = $systemItems->get()->where('gal', $gal)->where('sys', $sys)->where('pos', $pos)->first();
-            if (!$item) {
-                continue;
-            }
+            // list($gal, $sys, $pos) = explode(':', $report['coords']);
+            // $item = $systemItems->get()->where('gal', $gal)->where('sys', $sys)->where('pos', $pos)->first();
+            // if (!$item) {
+            //     continue;
+            // }
 
             $models[] = [
-                'system_id' => $item->id,
+                // 'system_id' => $item->id,
                 'coords' => (string)$report['coords'],
                 'type' => (int)$report['type'],
                 'api' => (string)$report['api'],

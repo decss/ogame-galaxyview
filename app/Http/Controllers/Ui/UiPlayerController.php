@@ -14,8 +14,11 @@ class UiPlayerController extends UiMainController
     public function player($id)
     {
         $player = Player::find($id);
-        $player->load('items', 'items.api');
+        $player->load('items');
+        // $player->load('items', 'items.api');
         $player->load('alliance');
+
+        $player->loadItemsApi();
 
         $sliced = 5;
         foreach ($player->items as $key => $item) {
