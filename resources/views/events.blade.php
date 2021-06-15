@@ -70,7 +70,7 @@
                     </div>
                     <div class="col-4">
                         <div class="form-check">
-                            <label><input name="player[]" class="form-check-input" type="checkbox" value="40" {{ in_array('40', $filters['player']) ? 'checked' : '' }}>Name change</label>
+                            <label><input name="player[]" class="form-check-input" type="checkbox" value="50" {{ in_array('50', $filters['player']) ? 'checked' : '' }}>Name change</label>
                         </div>
                         <div class="form-check">
                             <label><input name="player[]" class="form-check-input" type="checkbox" value="60" {{ in_array('60', $filters['player']) ? 'checked' : '' }}>Rank change</label>
@@ -285,21 +285,28 @@
                                             @if($row['type'] >= 40 && $row['type'] < 50 )
                                                 Status @if ($row['json']['new'] != 0) changed to @endif
 
-                                                @if ($row['type'] == 41)
-                                                    <span class="color-o">Outlaw</span>
-                                                @elseif ($row['type'] == 42)
-                                                    <span class="color-v">Vacation</span>
-                                                @elseif ($row['type'] == 43)
-                                                    <span class="color-b">Banned</span>
-                                                @elseif ($row['type'] == 44)
-                                                    <span class="color-i">Inactive</span>
-                                                @elseif ($row['type'] == 45)
-                                                    <span class="color-hp">Honourable</span>
-                                                @endif
+                                                @switch($row['type'])
+                                                    @case(41)
+                                                        <span class="color-o">Outlaw</span>
+                                                        @break
+                                                    @case(42)
+                                                        <span class="color-v">Vacation</span>
+                                                        @break
+                                                    @case(43)
+                                                        <span class="color-b">Banned</span>
+                                                        @break
+                                                    @case(44)
+                                                        <span class="color-i">Inactive</span>
+                                                        @break
+                                                    @case(45)
+                                                        <span class="color-hp">Honourable</span>
+                                                        @break
+                                                @endswitch
+
                                                 @if ($row['json']['new'] == 0) is terminated @endif
 
                                             @elseif($row['type'] == 50)
-                                                Name changed to <b>{{ $row['json']['new'] }}</b>
+                                                Name changed from <b>{{ $row['json']['old'] }}</b> to <b>{{ $row['json']['new'] }}</b>
                                             @elseif($row['type'] == 60)
                                                 @php
                                                 $diff = $row['json']['new'] - $row['json']['old'];

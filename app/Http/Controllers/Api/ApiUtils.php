@@ -473,7 +473,7 @@ class ApiUtils
                 ];
             }
             // 20 new moon
-            if ($item['moon'] && $item['moon']['size'] && !isset($dbPlanets[$pos]->moon_size)) {
+            if ($item['moon'] && $item['moon']['size'] && !(isset($dbPlanets[$pos]->moon_size) && $dbPlanets[$pos]->moon_size)) {
                 $changes[$pos][20] = [
                     'name' => $item['moon']['name'],
                     'size' => $item['moon']['size'],
@@ -552,8 +552,7 @@ class ApiUtils
     }
 
 
-    /** Utility
-     */
+    /** Utility */
     public static function checkPos($row)
     {
         $cols = explode("</td>", $row);
@@ -623,8 +622,7 @@ class ApiUtils
     }
 
 
-    /** Planet parse
-     */
+    /** Planet parse */
     public static function parsePlanet($row)
     {
         $cols = explode("</td>", $row);
@@ -668,8 +666,7 @@ class ApiUtils
     }
 
 
-    /** Moon parse
-     */
+    /** Moon parse */
     public static function parseMoon($row)
     {
         $cols = explode("</td>", $row);
@@ -703,8 +700,7 @@ class ApiUtils
     }
 
 
-    /** Debris parse
-     */
+    /** Debris parse */
     public static function parseDebris($row)
     {
         $cols = explode("</td>", $row);
@@ -726,8 +722,7 @@ class ApiUtils
     }
 
 
-    /** Player parse
-     */
+    /** Player parse */
     public static function parsePlayer($row)
     {
         if (self::checkPos($row)) {
